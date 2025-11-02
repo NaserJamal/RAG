@@ -1,0 +1,25 @@
+# Environment
+.env
+venv/
+env/
+*.pyc
+__pycache__/
+
+# Outputs
+levels/*/output/*
+!levels/*/output/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+*.egg-info/
+dist/
+build/

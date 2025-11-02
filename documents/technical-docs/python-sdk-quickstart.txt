@@ -1,0 +1,186 @@
+TechCorp Python SDK Quickstart Guide
+
+Version 2.1 | Python 3.8+
+
+Installation
+
+Install via pip:
+```bash
+pip install techcorp-sdk
+```
+
+Or with specific extras:
+```bash
+pip install techcorp-sdk[async]  # For async support
+pip install techcorp-sdk[cli]    # Includes CLI tools
+```
+
+Quick Start
+
+Initialize the client:
+```python
+from techcorp import Client
+
+# Using API key
+client = Client(api_key="tc_live_your_key_here")
+
+# Or using environment variable (recommended)
+# Set TECHCORP_API_KEY in your environment
+client = Client()  # Automatically loads from environment
+```
+
+Basic Operations
+
+List Users:
+```python
+users = client.users.list(limit=10)
+for user in users:
+    print(f"{user.id}: {user.name} ({user.email})")
+```
+
+Get User Details:
+```python
+user = client.users.get("user_123")
+print(f"Name: {user.name}")
+print(f"Created: {user.created_at}")
+```
+
+Create User:
+```python
+user = client.users.create(
+    name="John Doe",
+    email="john@example.com",
+    role="developer"
+)
+print(f"Created user: {user.id}")
+```
+
+Update User:
+```python
+user = client.users.update(
+    "user_123",
+    name="Jane Doe",
+    role="admin"
+)
+```
+
+Delete User:
+```python
+client.users.delete("user_123")
+```
+
+CloudStore Operations
+
+Upload File:
+```python
+# Upload from file path
+file = client.storage.upload(
+    bucket="my-bucket",
+    key="documents/report.pdf",
+    file_path="/local/path/report.pdf"
+)
+
+# Upload from bytes
+with open("data.json", "rb") as f:
+    file = client.storage.upload(
+        bucket="my-bucket",
+        key="data/data.json",
+        data=f.read(),
+        content_type="application/json"
+    )
+```
+
+Download File:
+```python
+# Download to file
+client.storage.download(
+    bucket="my-bucket",
+    key="documents/report.pdf",
+    destination="/local/path/report.pdf"
+)
+
+# Download to bytes
+data = client.storage.download_bytes(
+    bucket="my-bucket",
+    key="data/data.json"
+)
+```
+
+List Files:
+```python
+files = client.storage.list(
+    bucket="my-bucket",
+    prefix="documents/",
+    limit=100
+)
+
+for file in files:
+    print(f"{file.key} - {file.size} bytes")
+```
+
+Error Handling
+
+```python
+from techcorp.exceptions import (
+    AuthenticationError,
+    NotFoundError,
+    RateLimitError,
+    ValidationError
+)
+
+try:
+    user = client.users.get("user_123")
+except AuthenticationError:
+    print("Invalid API key")
+except NotFoundError:
+    print("User not found")
+except RateLimitError as e:
+    print(f"Rate limited. Retry after {e.retry_after} seconds")
+except ValidationError as e:
+    print(f"Validation error: {e.errors}")
+```
+
+Async Support
+
+```python
+import asyncio
+from techcorp import AsyncClient
+
+async def main():
+    client = AsyncClient(api_key="your_key")
+
+    # All methods support async
+    users = await client.users.list()
+    user = await client.users.get("user_123")
+
+    await client.close()
+
+asyncio.run(main())
+```
+
+Pagination
+
+```python
+# Automatic pagination
+all_users = []
+for page in client.users.list().iter_pages():
+    all_users.extend(page.data)
+
+# Or use auto_paging
+for user in client.users.list().auto_paging_iter():
+    print(user.name)
+```
+
+Configuration
+
+```python
+client = Client(
+    api_key="your_key",
+    base_url="https://api.techcorp.com/v3",  # Custom endpoint
+    timeout=30,  # Request timeout in seconds
+    max_retries=3,  # Automatic retries
+    retry_delay=1.0  # Initial retry delay
+)
+```
+
+For more details, see: https://docs.techcorp.com/python-sdk

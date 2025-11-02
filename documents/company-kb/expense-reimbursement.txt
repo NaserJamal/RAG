@@ -1,0 +1,136 @@
+TechCorp Expense Reimbursement Policy
+
+Effective Date: January 2025
+
+Purpose
+This policy establishes guidelines for business-related expenses and the reimbursement process to ensure fair, consistent, and timely payment for legitimate business costs incurred by employees.
+
+Eligible Expenses
+
+Business Travel
+Airfare: Economy class for domestic flights; premium economy for international flights over 6 hours
+Ground Transportation: Reasonable taxi, rideshare, rental car, or public transportation costs
+Lodging: Up to $200/night for standard business travel; up to $300/night for high-cost metropolitan areas (NYC, SF, London, Tokyo)
+Meals: Up to $75/day for domestic travel; up to $100/day for international travel
+
+Client Entertainment
+Business meals with clients or prospects: Up to $150 per person
+Event tickets: Up to $300 per person when hosting clients
+Entertainment venues: Reasonable costs for business development purposes
+Alcohol is permitted in moderation when entertaining clients
+
+Office Supplies
+Standard office supplies up to $50/month without pre-approval
+Computer accessories and peripherals up to $200 with manager approval
+Standing desks, ergonomic chairs require HR approval
+
+Professional Development
+Conference registration fees up to $2,000 per event
+Professional membership dues up to $500/year
+Books and online courses up to $500/year
+Certifications relevant to role (case-by-case approval required)
+
+Home Office Equipment
+For remote employees:
+- Monitor (up to $500)
+- Keyboard and mouse (up to $150)
+- Desk and chair (up to $800 combined)
+- High-speed internet reimbursement: $75/month
+
+Non-Reimbursable Expenses
+
+The following expenses will NOT be reimbursed:
+- Personal entertainment or leisure activities
+- Minibar charges and pay-per-view movies
+- Spa treatments, gym fees, personal grooming
+- Traffic violations, parking tickets
+- Expenses for spouse/family members unless pre-approved for company events
+- First-class or business-class upgrades on domestic flights
+- Loss or theft of personal items
+- Pet care or personal services
+
+Submission Process
+
+Timing
+All expenses must be submitted within 30 days of being incurred. Expenses older than 30 days will not be reimbursed without VP approval.
+
+Required Documentation
+- Original itemized receipts (photos acceptable via mobile app)
+- Credit card statements alone are NOT sufficient
+- Business purpose and attendees for meals/entertainment
+- For international expenses, include currency conversion details
+
+Submission Methods
+1. Web Portal: Upload receipts and complete expense form at expenses.techcorp.com
+2. Mobile App: TechCorp ExpenseTracker (iOS/Android)
+3. Email: expenses@techcorp.com (for technical issues only)
+
+Approval Workflow
+- Expenses under $500: Direct manager approval
+- Expenses $500-$2,000: Manager + Director approval
+- Expenses over $2,000: Manager + VP approval
+- All international travel: Pre-approval required
+
+Payment Timeline
+Approved expenses are reimbursed via direct deposit within 10 business days of approval. Ensure your banking information is current in the HR Portal.
+
+Corporate Credit Cards
+
+Eligibility
+Employees in the following roles are eligible for corporate credit cards:
+- Directors and above
+- Sales team members
+- Employees with regular travel requirements (5+ trips/year)
+
+Responsibilities
+- Corporate cards should be used ONLY for business expenses
+- Personal charges are strictly prohibited
+- Submit expense reports monthly even when using corporate card
+- Lost or stolen cards must be reported immediately to Finance
+
+Credit Limits
+- Individual contributors: $5,000/month
+- Managers: $10,000/month
+- Directors: $25,000/month
+- VPs and above: $50,000/month
+
+Travel Advances
+
+For international travel or extended trips, employees may request a travel advance:
+- Up to $2,000 for trips over 5 days
+- Must be requested 2 weeks before travel
+- Expense report due within 1 week of return
+- Unused advance must be returned
+
+Per Diem Rates (Alternative to Receipt Submission)
+
+Employees may opt for per diem rates instead of submitting meal receipts:
+- Domestic travel: $65/day
+- International travel: $85/day
+- Per diem covers all meals and incidentals
+- Cannot combine per diem with receipt-based meal reimbursement
+
+Mileage Reimbursement
+
+Personal vehicle use for business:
+- Standard rate: $0.67 per mile (matches IRS rate)
+- Submit mileage log with start/end locations and business purpose
+- Commute miles to primary office are not reimbursable
+- Parking fees and tolls reimbursed separately with receipts
+
+Policy Violations
+
+First offense: Written warning
+Second offense: Suspension of reimbursement privileges for 90 days
+Third offense: Disciplinary action up to and including termination
+
+Fraudulent expense claims will result in immediate termination and may involve legal action.
+
+Questions and Support
+
+For questions about eligible expenses or submission issues:
+- Email: expenses@techcorp.com
+- Phone: x5555 (Finance Department)
+- Office hours: Monday-Friday, 9 AM - 5 PM EST
+
+Policy exceptions require written approval from the CFO.

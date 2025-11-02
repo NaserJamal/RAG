@@ -1,0 +1,396 @@
+TechCorp API Authentication Guide
+
+Version 3.2 | Last Updated: January 2025
+
+Introduction
+
+This guide covers authentication methods for TechCorp's public APIs. All API endpoints require authentication to ensure secure access to resources.
+
+API Endpoint
+Base URL: https://api.techcorp.com/v3
+All requests must use HTTPS. HTTP requests will be rejected with a 400 error.
+
+Authentication Methods
+
+TechCorp supports three authentication methods:
+
+1. API Keys (Recommended for Server-to-Server)
+2. OAuth 2.0 (Recommended for User-Facing Applications)
+3. JWT Tokens (For Microservices)
+
+Method 1: API Key Authentication
+
+Overview
+API keys are the simplest authentication method, ideal for server-side applications and scripts.
+
+Creating an API Key
+1. Log in to the Developer Console: https://console.techcorp.com
+2. Navigate to Settings > API Keys
+3. Click "Generate New API Key"
+4. Provide a description (e.g., "Production App Server")
+5. Select permissions/scopes
+6. Copy the key immediately (shown only once)
+
+Using API Keys
+Include the API key in the request header:
+
+```
+GET /v3/users HTTP/1.1
+Host: api.techcorp.com
+Authorization: Bearer tc_live_k2j3h4k2j3h4k5j6h7k8j9h0
+```
+
+Example with cURL:
+```bash
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+     https://api.techcorp.com/v3/users
+```
+
+Example with Python:
+```python
+import requests
+
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(
+    "https://api.techcorp.com/v3/users",
+    headers=headers
+)
+
+print(response.json())
+```
+
+API Key Types
+- Test keys: Prefix `tc_test_` - for development and testing
+- Live keys: Prefix `tc_live_` - for production use
+
+Test keys only work with test data and have no rate limits. Live keys interact with production data and are subject to rate limiting.
+
+Security Best Practices
+- Never commit API keys to version control
+- Use environment variables to store keys
+- Rotate keys every 90 days
+- Use separate keys for different environments
+- Revoke compromised keys immediately
+- Never share keys in screenshots, logs, or error messages
+
+Key Permissions
+API keys can have granular permissions:
+- `read:users` - Read user information
+- `write:users` - Create and modify users
+- `read:storage` - Access CloudStore data
+- `write:storage` - Upload to CloudStore
+- `admin` - Full access (use sparingly)
+
+Grant only the minimum permissions required for each key.
+
+Method 2: OAuth 2.0 Authentication
+
+Overview
+OAuth 2.0 is recommended for applications that access resources on behalf of users. It allows users to grant limited access without sharing credentials.
+
+Supported Grant Types
+1. Authorization Code (recommended for web apps)
+2. Client Credentials (for server-to-server)
+3. Refresh Token (to extend sessions)
+
+We do NOT support the implicit grant due to security concerns.
+
+OAuth Flow - Authorization Code
+
+Step 1: Register Your Application
+1. Go to Developer Console > Applications
+2. Click "Create Application"
+3. Provide application details:
+   - Name
+   - Redirect URIs (must be HTTPS)
+   - Scopes required
+4. Note your Client ID and Client Secret
+
+Step 2: Redirect User to Authorization URL
+```
+https://auth.techcorp.com/oauth/authorize?
+  response_type=code&
+  client_id=YOUR_CLIENT_ID&
+  redirect_uri=YOUR_REDIRECT_URI&
+  scope=read:users write:storage&
+  state=RANDOM_STRING
+```
+
+Parameters:
+- `response_type`: Must be "code"
+- `client_id`: Your application's client ID
+- `redirect_uri`: Must match registered URI exactly
+- `scope`: Space-separated list of permissions
+- `state`: Random string to prevent CSRF (recommended)
+
+Step 3: User Grants Permission
+User logs in and approves the requested permissions. They are redirected to your redirect URI:
+
+```
+https://yourapp.com/callback?code=AUTH_CODE&state=RANDOM_STRING
+```
+
+Step 4: Exchange Code for Access Token
+Make a POST request to the token endpoint:
+
+```bash
+curl -X POST https://auth.techcorp.com/oauth/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=authorization_code" \
+  -d "code=AUTH_CODE" \
+  -d "client_id=YOUR_CLIENT_ID" \
+  -d "client_secret=YOUR_CLIENT_SECRET" \
+  -d "redirect_uri=YOUR_REDIRECT_URI"
+```
+
+Response:
+```json
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "tGzv3JOkF0XG5Qx2TlKWIA",
+  "scope": "read:users write:storage"
+}
+```
+
+Step 5: Use Access Token
+Include the access token in API requests:
+
+```bash
+curl -H "Authorization: Bearer ACCESS_TOKEN" \
+     https://api.techcorp.com/v3/users/me
+```
+
+Step 6: Refresh Token (When Expired)
+Access tokens expire after 1 hour. Use the refresh token to get a new one:
+
+```bash
+curl -X POST https://auth.techcorp.com/oauth/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=refresh_token" \
+  -d "refresh_token=YOUR_REFRESH_TOKEN" \
+  -d "client_id=YOUR_CLIENT_ID" \
+  -d "client_secret=YOUR_CLIENT_SECRET"
+```
+
+Refresh tokens are valid for 30 days.
+
+OAuth Scopes
+Available scopes:
+- `read:users` - Read user profile and preferences
+- `write:users` - Modify user information
+- `read:storage` - List and download files
+- `write:storage` - Upload and delete files
+- `read:analytics` - Access usage metrics
+- `admin` - Full account access
+
+Request only the scopes you need. Users will see exactly what permissions you're requesting.
+
+Method 3: JWT Token Authentication
+
+Overview
+JWT (JSON Web Tokens) are used for service-to-service authentication within TechCorp's ecosystem.
+
+Generating JWT Tokens
+1. Create a service account in Developer Console
+2. Download the JSON key file (contains private key)
+3. Use the private key to sign JWT tokens
+
+JWT Structure
+```
+Header:
+{
+  "alg": "RS256",
+  "typ": "JWT"
+}
+
+Payload:
+{
+  "iss": "service-account@techcorp.com",
+  "sub": "service-account@techcorp.com",
+  "aud": "https://api.techcorp.com",
+  "exp": 1735689600,
+  "iat": 1735686000
+}
+```
+
+Example (Python):
+```python
+import jwt
+import time
+
+private_key = open('service-account-key.pem').read()
+
+payload = {
+    'iss': 'service-account@techcorp.com',
+    'sub': 'service-account@techcorp.com',
+    'aud': 'https://api.techcorp.com',
+    'exp': int(time.time()) + 3600,
+    'iat': int(time.time())
+}
+
+token = jwt.encode(payload, private_key, algorithm='RS256')
+
+# Use token in API request
+headers = {'Authorization': f'Bearer {token}'}
+response = requests.get('https://api.techcorp.com/v3/users', headers=headers)
+```
+
+JWT tokens expire after 1 hour. Generate a new token when needed.
+
+Error Handling
+
+Common Authentication Errors
+
+401 Unauthorized
+```json
+{
+  "error": {
+    "code": "invalid_token",
+    "message": "The access token provided is invalid or has expired."
+  }
+}
+```
+
+Solution: Check that your token is correct and not expired. For API keys, verify the key hasn't been revoked. For OAuth, refresh your access token.
+
+403 Forbidden
+```json
+{
+  "error": {
+    "code": "insufficient_permissions",
+    "message": "The token does not have the required scope for this operation."
+  }
+}
+```
+
+Solution: Verify your API key or OAuth token has the necessary permissions/scopes.
+
+429 Too Many Requests
+```json
+{
+  "error": {
+    "code": "rate_limit_exceeded",
+    "message": "Rate limit exceeded. Retry after 60 seconds.",
+    "retry_after": 60
+  }
+}
+```
+
+Solution: Implement exponential backoff. Wait for the time specified in `retry_after` header.
+
+Rate Limits
+
+All authenticated requests are subject to rate limits:
+
+API Key Authentication:
+- 10,000 requests per hour
+- 100 requests per second (burst)
+
+OAuth Tokens:
+- 5,000 requests per hour per user
+- 50 requests per second (burst)
+
+JWT Tokens:
+- 50,000 requests per hour
+- 500 requests per second (burst)
+
+Rate limit headers are included in all responses:
+```
+X-RateLimit-Limit: 10000
+X-RateLimit-Remaining: 9956
+X-RateLimit-Reset: 1735689600
+```
+
+Best Practices
+
+1. Security
+   - Always use HTTPS
+   - Store credentials securely (never hardcode)
+   - Use environment variables or secret management services
+   - Implement token refresh logic before expiration
+   - Rotate credentials regularly
+
+2. Error Handling
+   - Implement retry logic with exponential backoff
+   - Handle all authentication error codes gracefully
+   - Log authentication failures for monitoring
+
+3. Token Management
+   - Cache tokens until near expiration
+   - Implement token refresh 5 minutes before expiry
+   - Handle token refresh failures
+
+4. Performance
+   - Reuse tokens across requests (don't generate new ones each time)
+   - Implement connection pooling
+   - Monitor rate limits and pace requests accordingly
+
+Testing Authentication
+
+Use our testing endpoints to verify authentication:
+
+```bash
+# Test API Key
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+     https://api.techcorp.com/v3/auth/test
+
+# Test OAuth Token
+curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+     https://api.techcorp.com/v3/auth/test
+
+# Response
+{
+  "authenticated": true,
+  "method": "api_key",
+  "scopes": ["read:users", "write:storage"],
+  "rate_limit": {
+    "limit": 10000,
+    "remaining": 9999,
+    "reset": 1735689600
+  }
+}
+```
+
+SDKs and Libraries
+
+TechCorp provides official SDKs that handle authentication automatically:
+
+Python:
+```bash
+pip install techcorp-sdk
+```
+
+```python
+from techcorp import Client
+
+client = Client(api_key="YOUR_API_KEY")
+users = client.users.list()
+```
+
+Node.js:
+```bash
+npm install @techcorp/sdk
+```
+
+```javascript
+const TechCorp = require('@techcorp/sdk');
+const client = new TechCorp({ apiKey: 'YOUR_API_KEY' });
+
+const users = await client.users.list();
+```
+
+See full SDK documentation at: https://docs.techcorp.com/sdks
+
+Support
+
+- API Documentation: https://docs.techcorp.com/api
+- Developer Console: https://console.techcorp.com
+- API Status: https://status.techcorp.com/api
+- Support: api-support@techcorp.com
+- Community Forum: https://community.techcorp.com/api

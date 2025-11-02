@@ -1,0 +1,252 @@
+TechCorp Remote Work and Flexible Working Policy
+
+Effective: January 2025
+
+Philosophy
+
+TechCorp embraces flexible working arrangements that empower employees to work where they're most productive while maintaining strong collaboration and company culture. We trust our employees to manage their work effectively regardless of location.
+
+Eligibility
+
+Remote Work Eligibility
+Full-time employees are eligible for remote work if:
+- They have completed 90-day probationary period
+- Role can be performed effectively remotely
+- Employee has demonstrated strong performance
+- Manager approves the arrangement
+
+Some roles require on-site presence:
+- Hardware lab engineers (minimum 3 days/week on-site)
+- Facilities and security staff (on-site roles)
+- Roles requiring physical equipment access
+
+Work Location Options
+
+Fully Remote
+- Work from anywhere within approved countries/states
+- No required office visits (except for team events)
+- Home office equipment provided
+- Must be available during core hours in team's time zone
+
+Hybrid - Office Regular
+- 3 days/week in office, 2 days remote
+- Choose which days to work remotely (coordinate with team)
+- Desk assigned in office space
+- Standard option for most roles
+
+Hybrid - Remote First
+- 1-2 days/month in office for team collaboration
+- Must attend quarterly all-hands meetings
+- Hot-desking when in office
+- Available for roles with minimal in-person requirements
+
+Fully On-Site
+- 5 days/week in office
+- Required for specific roles only
+- Full office amenities and benefits
+
+Equipment and Workspace
+
+Home Office Setup
+TechCorp provides remote workers with:
+- Laptop (MacBook Pro or equivalent Windows machine)
+- External monitor (up to 32")
+- Keyboard and mouse
+- Headset with microphone
+- Desk and ergonomic chair (up to $800 combined)
+- Laptop stand and cables
+
+Internet Reimbursement
+- $75/month for high-speed internet (minimum 50 Mbps down, 10 Mbps up)
+- Submit monthly receipt to expenses@techcorp.com
+- Expense code: HOME-INTERNET
+
+Workspace Requirements
+Remote workers must have:
+- Dedicated workspace free from distractions
+- Stable internet connection meeting minimum requirements
+- Professional background for video calls (or virtual background)
+- Quiet environment for calls and meetings
+
+Core Hours and Availability
+
+Core Hours
+All employees must be available during core hours for their team:
+- US Eastern: 10 AM - 3 PM ET
+- US Pacific: 10 AM - 3 PM PT
+- Europe: 10 AM - 3 PM CET
+- Asia Pacific: 10 AM - 3 PM in local timezone
+
+Outside core hours, employees have flexibility to work when most productive, as long as they:
+- Complete required work hours (40 hours/week for full-time)
+- Attend scheduled meetings
+- Respond to urgent messages within 2 hours during business hours
+- Communicate availability to team
+
+Time Zone Considerations
+- Employees should work primarily in the time zone where their team operates
+- Relocating to a different time zone requires manager approval
+- Maximum 3-hour difference from team's primary time zone
+- Exceptions require VP approval
+
+Communication Expectations
+
+Response Times
+- Slack messages: Within 2 hours during core hours
+- Email: Within 4 hours during core hours
+- Urgent issues (marked as such): Within 30 minutes
+- Out of office: Set status and delegate critical responsibilities
+
+Meeting Guidelines
+- Camera on for team meetings and 1:1s
+- Camera optional for large all-hands or training sessions
+- Test audio/video before important meetings
+- Join from quiet location
+- Mute when not speaking in large meetings
+
+Status Updates
+- Update Slack status with availability (meetings, lunch, focused work)
+- Block calendar for focused work time
+- Communicate when signing off early or starting late
+- Set automatic out-of-office replies for absences
+
+Collaboration and Culture
+
+Virtual Team Building
+TechCorp organizes:
+- Monthly virtual social events
+- Quarterly in-person team gatherings (travel covered)
+- Annual company retreat (all remote employees invited)
+- Virtual coffee roulette (random 1:1s across teams)
+
+Communication Channels
+- Slack: Primary instant messaging (response expected)
+- Email: Non-urgent communications, external communications
+- Zoom: Video calls and meetings
+- Notion: Documentation and project tracking
+- GitHub: Code collaboration
+
+Over-Communication is Encouraged
+In remote settings, it's better to over-communicate:
+- Share progress updates proactively
+- Document decisions and discussions
+- Make work visible to team
+- Ask questions when unclear
+
+Performance and Accountability
+
+Remote work does not change performance expectations:
+- Same deliverables and deadlines as office workers
+- Regular 1:1s with manager (weekly or bi-weekly)
+- Quarterly performance reviews
+- Career development opportunities equal to office workers
+
+Productivity is measured by output and impact, not hours online or response time outside core hours.
+
+Travel to Office
+
+When to Visit Office
+- Quarterly team planning sessions
+- Annual company all-hands
+- Major product launches or releases
+- Onboarding for new team members
+- Optional: Focus weeks, team building events
+
+Travel Coverage
+For remote employees required to travel to office:
+- Airfare/transportation fully covered
+- Hotel accommodation covered
+- Meals during travel days (per diem rates apply)
+- Submit travel expenses within 30 days
+
+International Remote Work
+
+Working from Abroad
+Short-term (up to 30 days/year):
+- Notify manager and HR 2 weeks in advance
+- Must work during team's core hours
+- Responsible for internet and workspace
+- Check tax and visa implications
+
+Long-term (over 30 days):
+- Requires HR and Legal approval
+- Must be in country with legal entity or EOR partnership
+- May affect compensation (based on location)
+- Limited to specific approved countries
+
+Tax and Legal Considerations
+- Employee responsible for understanding tax obligations
+- TechCorp cannot provide tax advice
+- May need to withhold taxes in work location
+- Some countries are not approved due to legal/security concerns
+
+Security Requirements
+
+All remote workers must:
+- Use company-provided VPN for accessing corporate resources
+- Enable full-disk encryption on laptops
+- Use password manager (1Password provided)
+- Enable 2FA on all work accounts
+- Never share credentials or leave devices unlocked
+- Report lost/stolen devices immediately
+- Complete annual security training
+
+Restricted Activities:
+- Working from public WiFi without VPN
+- Accessing sensitive data on personal devices
+- Sharing screen with non-employees present
+- Discussing confidential information in public spaces
+
+Transitioning Between Arrangements
+
+Requesting Changes
+To change work arrangement:
+1. Discuss with manager
+2. Submit request via HR portal
+3. Receive approval from manager and HR
+4. Allow 30-day transition period
+
+Changes may be requested due to:
+- Life circumstances (relocation, family needs)
+- Performance improvement
+- Role changes
+- Personal preference
+
+Reverting to Office
+Company may require return to office if:
+- Performance issues persist despite feedback
+- Role requirements change
+- Business needs require on-site presence
+- Provide 60-day notice for permanent changes
+
+Temporary Office Requirements
+For urgent situations, may require office presence with 2-week notice:
+- Critical product launches
+- Customer escalations requiring war room
+- Security incidents
+- Team-building events
+
+Policy Violations
+
+Failure to comply may result in:
+- Warning and performance improvement plan
+- Temporary loss of remote work privilege
+- Requirement to return to office
+- Disciplinary action
+
+Common violations:
+- Consistent unavailability during core hours
+- Missing meetings without notice
+- Security policy breaches
+- Misrepresenting work location
+
+Resources and Support
+
+- Remote Work FAQ: hr.techcorp.com/remote-faq
+- Equipment Requests: it.techcorp.com/equipment
+- Internet Reimbursement Form: expenses.techcorp.com
+- Remote Work Community Slack: #remote-work
+- IT Support: helpdesk@techcorp.com
+- HR Questions: remotework@techcorp.com
+
+This policy is reviewed annually and updated based on employee feedback and business needs. Last review: January 2025. Next review: January 2026.
