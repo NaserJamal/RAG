@@ -1,31 +1,77 @@
-"""Vector similarity search retriever."""
+"""
+Vector search retriever using Qdrant.
 
+This is a wrapper around the shared QdrantVectorStore for Level 02.
+"""
+
+import sys
+from pathlib import Path
 from typing import List, Dict, Tuple
 import numpy as np
-from .embedder import Embedder
+
+# Add shared module to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from shared import Embedder, QdrantVectorStore
 
 
 class VectorRetriever:
-    """Retrieves documents using vector similarity search."""
+    """Retrieves documents using semantic vector search with Qdrant."""
 
-    def __init__(self, documents: List[Dict], embedder: Embedder):
+    def __init__(
+        self,
+        collection_name: str,
+        embedder: Embedder,
+        vector_store: QdrantVectorStore
+    ):
         """
         Initialize the vector retriever.
 
         Args:
-            documents: List of document dictionaries
+            collection_name: Name of the Qdrant collection
             embedder: Embedder instance for generating embeddings
+            vector_store: QdrantVectorStore instance
         """
-        self.documents = documents
+        self.collection_name = collection_name
         self.embedder = embedder
-        self.embeddings = None
+        self.vector_store = vector_store
+        self.documents = []
 
-    def index(self):
-        """Generate and store embeddings for all documents."""
-        print("🔢 Generating vector embeddings...")
-        doc_texts = [doc["content"] for doc in self.documents]
-        self.embeddings = self.embedder.embed(doc_texts)
-        print(f"✅ Indexed {len(self.embeddings)} documents")
+    def index(self, documents: List[Dict]) -> None:
+        """
+        Build vector index from documents.
+
+        Args:
+            documents: List of document dictionaries with 'id' and 'content'
+        """
+        print("🔢 Generating embeddings and building vector index...")
+
+        self.documents = documents
+        doc_contents = [doc["content"] for doc in documents]
+        doc_ids = [doc["id"] for doc in documents]
+
+        # Generate embeddings
+        embeddings = self.embedder.embed(doc_contents)
+
+        # Create collection
+        self.vector_store.create_collection(
+            collection_name=self.collection_name,
+            vector_dim=self.embedder.get_embedding_dimension()
+        )
+
+        # Add vectors with metadata
+        metadata = [
+            {"content": doc["content"], "path": doc.get("path", "")}
+            for doc in documents
+        ]
+        self.vector_store.add_vectors(
+            collection_name=self.collection_name,
+            vectors=embeddings,
+            ids=doc_ids,
+            metadata=metadata
+        )
+
+        print(f"✅ Indexed {len(documents)} documents in vector store")
 
     def search(self, query: str, k: int = 5) -> List[Tuple[str, float]]:
         """
@@ -38,43 +84,14 @@ class VectorRetriever:
         Returns:
             List of (document_id, score) tuples sorted by relevance
         """
-        if self.embeddings is None:
-            raise ValueError("Must call index() before searching")
-
         # Generate query embedding
         query_embedding = self.embedder.embed_query(query)
 
-        # Compute cosine similarity
-        similarities = self._cosine_similarity(query_embedding, self.embeddings)
-
-        # Get top-k
-        top_indices = np.argsort(similarities)[::-1][:k]
-
-        results = []
-        for idx in top_indices:
-            doc_id = self.documents[idx]["id"]
-            score = float(similarities[idx])
-            results.append((doc_id, score))
+        # Search in Qdrant
+        results = self.vector_store.search(
+            collection_name=self.collection_name,
+            query_vector=query_embedding,
+            top_k=k
+        )
 
         return results
-
-    @staticmethod
-    def _cosine_similarity(query_embedding: np.ndarray, doc_embeddings: np.ndarray) -> np.ndarray:
-        """
-        Compute cosine similarity between query and document embeddings.
-
-        Args:
-            query_embedding: 1D array of query embedding
-            doc_embeddings: 2D array of document embeddings
-
-        Returns:
-            1D array of similarity scores
-        """
-        # Normalize vectors
-        query_norm = query_embedding / np.linalg.norm(query_embedding)
-        doc_norms = doc_embeddings / np.linalg.norm(doc_embeddings, axis=1, keepdims=True)
-
-        # Compute dot product
-        similarities = np.dot(doc_norms, query_norm)
-
-        return similarities

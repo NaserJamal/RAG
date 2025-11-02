@@ -1,15 +1,20 @@
 """Configuration constants for chunking strategies."""
 
-import os
+import sys
 from pathlib import Path
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Add shared module to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-# API Configuration
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+from shared import Config as SharedConfig
+
+# Re-export shared configuration
+OPENAI_API_KEY = SharedConfig.OPENAI_API_KEY
+EMBEDDING_MODEL = SharedConfig.EMBEDDING_MODEL
+
+# Level-specific paths
+DOCUMENTS_PATH = SharedConfig.get_documents_path("03-chunking-strategies")
+OUTPUT_PATH = SharedConfig.get_output_path("03-chunking-strategies")
 
 # Chunking Configuration
 CHUNK_SIZE = 512        # Target chunk size in tokens
@@ -18,8 +23,3 @@ SEMANTIC_THRESHOLD = 0.5  # Similarity threshold for semantic chunking
 
 # Retrieval Configuration
 TOP_K = 3               # Number of chunks to retrieve
-
-# Paths
-BASE_PATH = Path(__file__).parent.parent
-DOCUMENTS_PATH = BASE_PATH.parent.parent / "documents"
-OUTPUT_PATH = BASE_PATH / "output"

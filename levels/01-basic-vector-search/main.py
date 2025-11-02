@@ -1,183 +1,141 @@
 """
 Level 01: Basic Vector Search
-A simple implementation of vector similarity search using OpenAI embeddings.
+
+A simple implementation of vector similarity search using OpenAI embeddings
+and Qdrant vector database.
 """
 
-import os
-import json
-from datetime import datetime
+import sys
 from pathlib import Path
-from typing import List, Dict, Tuple
-import numpy as np
-from openai import OpenAI
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Add shared module to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-# Configuration
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
-TOP_K = 5
-DOCUMENTS_PATH = Path(__file__).parent.parent.parent / "documents"
-OUTPUT_PATH = Path(__file__).parent / "output"
+from shared import (
+    Config,
+    Embedder,
+    QdrantVectorStore,
+    load_documents,
+    OutputManager,
+)
 
-
-def load_documents() -> List[Dict[str, str]]:
-    """Load all text documents from the documents directory."""
-    documents = []
-
-    for doc_dir in DOCUMENTS_PATH.iterdir():
-        if not doc_dir.is_dir():
-            continue
-
-        for doc_file in doc_dir.glob("*.txt"):
-            with open(doc_file, 'r', encoding='utf-8') as f:
-                content = f.read()
-                documents.append({
-                    "id": f"{doc_dir.name}/{doc_file.name}",
-                    "path": str(doc_file),
-                    "content": content
-                })
-
-    return documents
-
-
-def generate_embeddings(texts: List[str], client: OpenAI) -> np.ndarray:
-    """Generate embeddings for a list of texts using OpenAI API."""
-    response = client.embeddings.create(
-        model=EMBEDDING_MODEL,
-        input=texts
-    )
-
-    embeddings = [item.embedding for item in response.data]
-    return np.array(embeddings)
-
-
-def cosine_similarity(query_embedding: np.ndarray, doc_embeddings: np.ndarray) -> np.ndarray:
-    """
-    Compute cosine similarity between query and document embeddings.
-
-    Args:
-        query_embedding: 1D array of query embedding
-        doc_embeddings: 2D array of document embeddings (n_docs x embedding_dim)
-
-    Returns:
-        1D array of similarity scores
-    """
-    # Normalize vectors
-    query_norm = query_embedding / np.linalg.norm(query_embedding)
-    doc_norms = doc_embeddings / np.linalg.norm(doc_embeddings, axis=1, keepdims=True)
-
-    # Compute dot product (cosine similarity for normalized vectors)
-    similarities = np.dot(doc_norms, query_norm)
-
-    return similarities
-
-
-def search(query: str, documents: List[Dict], embeddings: np.ndarray, client: OpenAI, k: int = TOP_K) -> List[Dict]:
-    """
-    Search for the most relevant documents for a given query.
-
-    Args:
-        query: Search query string
-        documents: List of document dictionaries
-        embeddings: Document embeddings matrix
-        client: OpenAI client instance
-        k: Number of top results to return
-
-    Returns:
-        List of top-k most relevant documents with scores
-    """
-    # Generate query embedding
-    query_embedding = generate_embeddings([query], client)[0]
-
-    # Compute similarities
-    similarities = cosine_similarity(query_embedding, embeddings)
-
-    # Get top-k indices
-    top_indices = np.argsort(similarities)[::-1][:k]
-
-    # Build results
-    results = []
-    for rank, idx in enumerate(top_indices, 1):
-        results.append({
-            "rank": rank,
-            "score": float(similarities[idx]),
-            "document": documents[idx]["id"],
-            "path": documents[idx]["path"],
-            "preview": documents[idx]["content"][:500] + "..." if len(documents[idx]["content"]) > 500 else documents[idx]["content"]
-        })
-
-    return results
-
-
-def save_results(query: str, results: List[Dict], output_dir: Path):
-    """Save search results to JSON and text files."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Save as JSON
-    output_data = {
-        "query": query,
-        "timestamp": datetime.now().isoformat(),
-        "results": results,
-        "metadata": {
-            "retrieval_method": "vector_search",
-            "embedding_model": EMBEDDING_MODEL,
-            "top_k": TOP_K
-        }
-    }
-
-    with open(output_dir / "results.json", 'w') as f:
-        json.dump(output_data, f, indent=2)
-
-    # Save as readable text
-    with open(output_dir / "query_log.txt", 'w') as f:
-        f.write(f"Query: {query}\n")
-        f.write(f"Timestamp: {datetime.now().isoformat()}\n")
-        f.write(f"{'=' * 80}\n\n")
-
-        for result in results:
-            f.write(f"Rank {result['rank']}:\n")
-            f.write(f"  Document: {result['document']}\n")
-            f.write(f"  Similarity Score: {result['score']:.4f}\n")
-            f.write(f"  Preview: {result['preview'][:200]}...\n")
-            f.write(f"{'-' * 80}\n")
+LEVEL_NAME = "01-basic-vector-search"
+COLLECTION_NAME = "level_01_basic_search"
 
 
 def main():
     """Main execution function."""
-    print("📄 Loading documents...")
-    documents = load_documents()
+    # Validate configuration
+    Config.validate()
+
+    # Setup paths
+    documents_path = Config.get_documents_path(LEVEL_NAME)
+    output_path = Config.get_output_path(LEVEL_NAME)
+
+    # Initialize components
+    embedder = Embedder()
+    vector_store = QdrantVectorStore()
+    output_manager = OutputManager(output_path)
+
+    print("=" * 80)
+    print("Level 01: Basic Vector Search with Qdrant")
+    print("=" * 80)
+
+    # Load documents
+    print("\n📄 Loading documents...")
+    documents = load_documents(documents_path)
     print(f"✅ Loaded {len(documents)} documents")
 
+    # Generate embeddings
     print("\n🔢 Generating embeddings...")
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
     doc_contents = [doc["content"] for doc in documents]
-    embeddings = generate_embeddings(doc_contents, client)
+    doc_ids = [doc["id"] for doc in documents]
+    embeddings = embedder.embed(doc_contents)
     print(f"✅ Generated {len(embeddings)} embeddings")
+
+    # Create vector store collection
+    print("\n🗄️  Setting up Qdrant collection...")
+    vector_store.create_collection(
+        collection_name=COLLECTION_NAME,
+        vector_dim=embedder.get_embedding_dimension()
+    )
+    print(f"✅ Collection '{COLLECTION_NAME}' created")
+
+    # Add vectors to store
+    print("\n📥 Adding vectors to Qdrant...")
+    metadata = [{"content": doc["content"], "path": doc["path"]} for doc in documents]
+    vector_store.add_vectors(
+        collection_name=COLLECTION_NAME,
+        vectors=embeddings,
+        ids=doc_ids,
+        metadata=metadata
+    )
+    print(f"✅ Added {len(embeddings)} vectors to Qdrant")
 
     # Example query
     query = "What is the vacation policy?"
     print(f"\n🔍 Searching for: '{query}'")
 
-    results = search(query, documents, embeddings, client)
-    print(f"✅ Found {len(results)} results")
+    # Generate query embedding and search
+    query_embedding = embedder.embed_query(query)
+    search_results = vector_store.search(
+        collection_name=COLLECTION_NAME,
+        query_vector=query_embedding,
+        top_k=Config.DEFAULT_TOP_K
+    )
+    print(f"✅ Found {len(search_results)} results")
+
+    # Format results
+    results = []
+    for rank, (doc_id, score) in enumerate(search_results, 1):
+        doc_metadata = vector_store.get_metadata(COLLECTION_NAME, doc_id)
+        content = doc_metadata.get("content", "") if doc_metadata else ""
+        preview = content[:500] + "..." if len(content) > 500 else content
+
+        results.append({
+            "rank": rank,
+            "score": float(score),
+            "document_id": doc_id,
+            "path": doc_metadata.get("path", "") if doc_metadata else "",
+            "preview": preview
+        })
 
     # Display results
-    print(f"\n{'=' * 80}")
+    print("\n" + "=" * 80)
     print("Top Results:")
-    print(f"{'=' * 80}\n")
+    print("=" * 80 + "\n")
 
     for result in results:
-        print(f"#{result['rank']} - {result['document']} (Score: {result['score']:.4f})")
+        print(f"#{result['rank']} - {result['document_id']} (Score: {result['score']:.4f})")
         print(f"   {result['preview'][:150]}...")
         print()
 
     # Save results
     print("💾 Saving results...")
-    save_results(query, results, OUTPUT_PATH)
-    print(f"✅ Results saved to {OUTPUT_PATH}/")
+
+    output_data = {
+        "query": query,
+        "results": results,
+        "metadata": {
+            "retrieval_method": "vector_search",
+            "embedding_model": Config.EMBEDDING_MODEL,
+            "vector_store": "qdrant",
+            "collection": COLLECTION_NAME,
+            "top_k": Config.DEFAULT_TOP_K
+        }
+    }
+
+    output_manager.save_results("results", output_data)
+
+    # Save human-readable format
+    readable_text = output_manager.format_search_results(
+        query=query,
+        results=results,
+        title="Level 01: Basic Vector Search Results"
+    )
+    output_manager.save_text("query_log.txt", readable_text)
+
+    print(f"✅ Results saved to {output_path}/")
     print(f"   - results.json")
     print(f"   - query_log.txt")
 

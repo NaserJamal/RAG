@@ -1,6 +1,12 @@
+# Core dependencies
 openai>=1.0.0
 numpy>=1.24.0
 python-dotenv>=1.0.0
-rank-bm25>=0.2.2
-tiktoken>=0.5.0
-nltk>=3.8.0
+
+# Vector database
+qdrant-client>=1.7.0
+
+# Level-specific dependencies
+rank-bm25>=0.2.2      # Level 02: BM25 keyword search
+tiktoken>=0.5.0       # Level 03: Token counting for chunking
+nltk>=3.8.0           # Level 03: Sentence tokenization

@@ -1,8 +1,14 @@
 """Evaluation and comparison utilities for chunking strategies."""
 
+import sys
+from pathlib import Path
 from typing import List, Dict
 import numpy as np
-from .embedder import Embedder
+
+# Add shared module to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from shared import Embedder
 
 
 class ChunkEvaluator:

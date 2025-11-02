@@ -1,29 +1,22 @@
 """Configuration constants for hybrid search."""
 
-import os
+import sys
 from pathlib import Path
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Add shared module to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-# API Configuration
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+from shared import Config as SharedConfig
 
-# Embedding Configuration
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
-EMBEDDING_DIMENSIONS = 1536
+# Re-export shared configuration
+OPENAI_API_KEY = SharedConfig.OPENAI_API_KEY
+EMBEDDING_MODEL = SharedConfig.EMBEDDING_MODEL
+TOP_K = SharedConfig.DEFAULT_TOP_K
 
-# Retrieval Configuration
-TOP_K = 5
-SIMILARITY_THRESHOLD = 0.7
+# Level-specific paths
+DOCUMENTS_PATH = SharedConfig.get_documents_path("02-hybrid-search")
+OUTPUT_PATH = SharedConfig.get_output_path("02-hybrid-search")
 
-# Hybrid Search Configuration
+# Hybrid Search specific configuration
 ALPHA = 0.5  # Weight for semantic search (0.0 = pure keyword, 1.0 = pure semantic)
 RRF_K = 60   # Constant for Reciprocal Rank Fusion
-
-# Paths
-BASE_PATH = Path(__file__).parent.parent
-DOCUMENTS_PATH = BASE_PATH.parent.parent / "documents"
-OUTPUT_PATH = BASE_PATH / "output"

@@ -1,11 +1,17 @@
 """Semantic chunking implementation using embedding similarity."""
 
+import sys
+from pathlib import Path
 from typing import List, Dict
 import numpy as np
 import nltk
 from nltk.tokenize import sent_tokenize
 import tiktoken
-from .embedder import Embedder
+
+# Add shared module to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from shared import Embedder
 from .config import CHUNK_SIZE, SEMANTIC_THRESHOLD
 
 # Download required NLTK data

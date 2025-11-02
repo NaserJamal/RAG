@@ -18,7 +18,8 @@ By the end, you'll understand the core building blocks of production RAG systems
 ## Prerequisites
 
 - **Python 3.8+**
-- **OpenAI API key** (or OpenRouter for cheaper alternatives)
+- **Docker and Docker Compose** (for Qdrant vector database)
+- **OpenAI API key** for embeddings generation
 - **Basic understanding of Python** and API usage
 - **Familiarity with command line** operations
 
@@ -38,11 +39,14 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Configure API key
+# 4. Start Qdrant vector database
+docker-compose up -d
+
+# 5. Configure API key
 cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
 
-# 5. Run Level 01
+# 6. Run Level 01
 cd levels/01-basic-vector-search
 python main.py
 
@@ -120,7 +124,12 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. **Download NLTK data** (for Level 03):
+4. **Start Qdrant vector database**:
+```bash
+docker-compose up -d
+```
+
+5. **Download NLTK data** (for Level 03):
 ```bash
 python -c "import nltk; nltk.download('punkt')"
 ```
@@ -136,22 +145,14 @@ cp .env.example .env
 
 2. **Edit `.env` and add your API key**:
 ```bash
+# Required
 OPENAI_API_KEY=sk-your-actual-api-key-here
-OPENAI_BASE_URL=https://api.openai.com/v1
+
+# Optional - defaults shown
 EMBEDDING_MODEL=text-embedding-3-small
+QDRANT_HOST=localhost
+QDRANT_PORT=6333
 ```
-
-### Using OpenRouter (Cheaper Alternative)
-
-OpenRouter provides access to multiple LLM providers, often at lower cost:
-
-```bash
-# In .env
-OPENAI_BASE_URL=https://openrouter.ai/api/v1
-OPENAI_API_KEY=your-openrouter-key-here
-```
-
-Get a key at [openrouter.ai](https://openrouter.ai)
 
 ### Configuration Options
 
@@ -196,53 +197,51 @@ Each level has a `config.py` (or configuration at the top of `main.py`) where yo
 simple-rag/
 ├── README.md                        # You are here
 ├── requirements.txt                 # Python dependencies
+├── docker-compose.yml               # Qdrant vector database
 ├── .env.example                     # API configuration template
 ├── .gitignore                       # Git ignore rules
 │
 ├── documents/                       # Shared sample documents
 │   ├── company-kb/                  # Company knowledge base
-│   │   ├── vacation-policy.txt
-│   │   ├── expense-reimbursement.txt
-│   │   ├── product-cloudstore-overview.txt
-│   │   └── remote-work-policy.txt
 │   ├── technical-docs/              # Technical documentation
-│   │   ├── api-authentication-guide.txt
-│   │   └── python-sdk-quickstart.txt
 │   ├── news-articles/               # Current events articles
-│   │   ├── ai-healthcare-breakthroughs-2025.txt
-│   │   └── climate-tech-investments-surge.txt
 │   └── mixed-content/               # Various document types
-│       ├── short-note-meeting-summary.txt
-│       └── comprehensive-ml-systems-design.txt
 │
 └── levels/                          # Progressive learning levels
+    ├── shared/                      # Shared components (NEW!)
+    │   ├── README.md                # Component documentation
+    │   ├── config.py                # Centralized configuration
+    │   ├── embedder.py              # OpenAI embedding generation
+    │   ├── vector_store.py          # Qdrant integration
+    │   ├── document_loader.py       # Document loading utilities
+    │   ├── similarity.py            # Similarity metrics
+    │   └── output_manager.py        # Results formatting
+    │
     ├── 01-basic-vector-search/
     │   ├── README.md                # Level documentation
-    │   ├── main.py                  # Single-file implementation
+    │   ├── main.py                  # Uses shared components
     │   └── output/                  # Generated results
     │
     ├── 02-hybrid-search/
     │   ├── README.md
     │   ├── main.py                  # Entry point
     │   ├── output/
-    │   └── utils/                   # Modular package
-    │       ├── config.py
-    │       ├── embedder.py
-    │       ├── vector_retriever.py
-    │       ├── bm25_retriever.py
-    │       └── hybrid_retriever.py
+    │   └── utils/                   # Level-specific utilities
+    │       ├── config.py            # Extends shared config
+    │       ├── vector_retriever.py  # Qdrant wrapper
+    │       ├── bm25_retriever.py    # BM25 keyword search
+    │       └── hybrid_retriever.py  # RRF fusion
     │
     ├── 03-chunking-strategies/
     │   ├── README.md
     │   ├── main.py
     │   ├── output/
-    │   └── utils/
-    │       ├── config.py
-    │       ├── embedder.py
-    │       ├── fixed_chunker.py
-    │       ├── recursive_chunker.py
-    │       ├── semantic_chunker.py
-    │       └── chunk_evaluator.py
+    │   └── utils/                   # Level-specific utilities
+    │       ├── config.py            # Extends shared config
+    │       ├── fixed_chunker.py     # Token-based chunking
+    │       ├── recursive_chunker.py # Hierarchical splitting
+    │       ├── semantic_chunker.py  # Embedding-based chunking
+    │       └── chunk_evaluator.py   # Evaluation utilities
     │
     └── 04-agentic-rag/
         └── README.md                # Coming soon placeholder
@@ -320,9 +319,9 @@ All levels use OpenAI's `text-embedding-3-small` model for cost efficiency:
 This repository teaches fundamentals. For production RAG systems, consider:
 
 ### Vector Databases
+- **Qdrant**: High performance, used in this training
 - **Pinecone**: Managed, easy to use, good DX
 - **Weaviate**: Open source, feature-rich
-- **Qdrant**: High performance, local or cloud
 - **Chroma**: Simple, local-first
 
 ### Frameworks

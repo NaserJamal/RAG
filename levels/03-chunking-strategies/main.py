@@ -1,105 +1,23 @@
 """
 Level 03: Chunking Strategies
+
 Compares different text chunking approaches for optimal retrieval.
 """
 
-import json
-from datetime import datetime
+import sys
 from pathlib import Path
 from typing import List, Dict
 
+# Add shared module to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from shared import Config, Embedder, load_documents, OutputManager
+
 from utils.config import DOCUMENTS_PATH, OUTPUT_PATH, TOP_K
-from utils.embedder import Embedder
 from utils.fixed_chunker import FixedChunker
 from utils.recursive_chunker import RecursiveChunker
 from utils.semantic_chunker import SemanticChunker
 from utils.chunk_evaluator import ChunkEvaluator
-
-
-def load_documents() -> List[Dict[str, str]]:
-    """Load all text documents from the documents directory."""
-    documents = []
-
-    for doc_dir in DOCUMENTS_PATH.iterdir():
-        if not doc_dir.is_dir():
-            continue
-
-        for doc_file in doc_dir.glob("*.txt"):
-            with open(doc_file, 'r', encoding='utf-8') as f:
-                content = f.read()
-                documents.append({
-                    "id": f"{doc_dir.name}/{doc_file.name}",
-                    "path": str(doc_file),
-                    "content": content
-                })
-
-    return documents
-
-
-def save_chunks(chunks: List[Dict], filename: str, output_dir: Path):
-    """Save chunks to JSON file."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    with open(output_dir / filename, 'w') as f:
-        json.dump(chunks, f, indent=2)
-
-
-def save_evaluation(evaluation: Dict, filename: str, output_dir: Path):
-    """Save evaluation results to JSON file."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    with open(output_dir / filename, 'w') as f:
-        json.dump(evaluation, f, indent=2)
-
-
-def save_comparison(query: str, evaluations: Dict[str, Dict], output_dir: Path):
-    """Save comparison of chunking strategies."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Create comparison metrics
-    comparison = {
-        "query": query,
-        "timestamp": datetime.now().isoformat(),
-        "strategies": {}
-    }
-
-    for strategy, eval_data in evaluations.items():
-        comparison["strategies"][strategy] = {
-            "num_chunks": eval_data["num_chunks"],
-            "avg_chunk_size": round(eval_data["avg_chunk_size"], 1),
-            "top_score": round(eval_data["top_score"], 4)
-        }
-
-    with open(output_dir / "comparison_metrics.json", 'w') as f:
-        json.dump(comparison, f, indent=2)
-
-    # Create text visualization
-    with open(output_dir / "chunk_visualization.txt", 'w') as f:
-        f.write(f"Chunking Strategies Comparison\n")
-        f.write(f"Query: {query}\n")
-        f.write(f"{'=' * 100}\n\n")
-
-        # Metrics table
-        f.write("Strategy Metrics:\n")
-        f.write(f"{'-' * 100}\n")
-        f.write(f"{'Strategy':<15} {'Chunks':>8} {'Avg Size':>10} {'Top Score':>12}\n")
-        f.write(f"{'-' * 100}\n")
-
-        for strategy, eval_data in evaluations.items():
-            f.write(f"{strategy:<15} {eval_data['num_chunks']:>8} "
-                   f"{eval_data['avg_chunk_size']:>10.1f} "
-                   f"{eval_data['top_score']:>12.4f}\n")
-
-        f.write(f"{'-' * 100}\n\n")
-
-        # Top results for each strategy
-        for strategy, eval_data in evaluations.items():
-            f.write(f"\n{strategy.upper()} - Top Results:\n")
-            f.write(f"{'-' * 100}\n")
-            for result in eval_data["results"]:
-                f.write(f"  #{result['rank']} (Score: {result['score']:.4f}, "
-                       f"{result['num_tokens']} tokens)\n")
-                f.write(f"  {result['text']}\n\n")
 
 
 def print_comparison_table(evaluations: Dict[str, Dict]):
@@ -123,12 +41,23 @@ def print_comparison_table(evaluations: Dict[str, Dict]):
 
 def main():
     """Main execution function."""
-    print("📄 Loading documents...")
-    documents = load_documents()
+    # Validate configuration
+    Config.validate()
+
+    # Initialize components
+    embedder = Embedder()
+    output_manager = OutputManager(OUTPUT_PATH)
+
+    print("=" * 100)
+    print("Level 03: Chunking Strategies Comparison")
+    print("=" * 100)
+
+    # Load documents
+    print("\n📄 Loading documents...")
+    documents = load_documents(DOCUMENTS_PATH)
     print(f"✅ Loaded {len(documents)} documents\n")
 
     # Select one document for detailed analysis
-    # Choose the comprehensive ML document for interesting chunking behavior
     test_doc = next(
         (doc for doc in documents if "ml-systems-design" in doc["id"]),
         documents[0]  # Fallback to first document
@@ -137,8 +66,7 @@ def main():
     print(f"📋 Analyzing document: {test_doc['id']}")
     print(f"   Length: {len(test_doc['content'])} characters\n")
 
-    # Initialize embedder and evaluator
-    embedder = Embedder()
+    # Initialize evaluator
     evaluator = ChunkEvaluator(embedder)
 
     # Initialize chunkers
@@ -163,9 +91,9 @@ def main():
 
     # Save chunks
     print("\n💾 Saving chunks...")
-    save_chunks(fixed_chunks, "fixed_chunks.json", OUTPUT_PATH)
-    save_chunks(recursive_chunks, "recursive_chunks.json", OUTPUT_PATH)
-    save_chunks(semantic_chunks, "semantic_chunks.json", OUTPUT_PATH)
+    output_manager.save_results("fixed_chunks", {"chunks": fixed_chunks})
+    output_manager.save_results("recursive_chunks", {"chunks": recursive_chunks})
+    output_manager.save_results("semantic_chunks", {"chunks": semantic_chunks})
 
     # Evaluate with a query
     query = "How do you handle model training and deployment?"
@@ -189,9 +117,57 @@ def main():
     }
 
     for strategy, eval_data in evaluations.items():
-        save_evaluation(eval_data, f"{strategy}_evaluation.json", OUTPUT_PATH)
+        output_manager.save_results(f"{strategy}_evaluation", eval_data)
 
-    save_comparison(query, evaluations, OUTPUT_PATH)
+    # Save comparison metrics
+    comparison = {
+        "query": query,
+        "strategies": {}
+    }
+
+    for strategy, eval_data in evaluations.items():
+        comparison["strategies"][strategy] = {
+            "num_chunks": eval_data["num_chunks"],
+            "avg_chunk_size": round(eval_data["avg_chunk_size"], 1),
+            "top_score": round(eval_data["top_score"], 4)
+        }
+
+    output_manager.save_results("comparison_metrics", comparison)
+
+    # Create visualization text
+    viz_lines = [
+        "Chunking Strategies Comparison",
+        f"Query: {query}",
+        "=" * 100,
+        "",
+        "Strategy Metrics:",
+        "-" * 100,
+        f"{'Strategy':<15} {'Chunks':>8} {'Avg Size':>10} {'Top Score':>12}",
+        "-" * 100,
+    ]
+
+    for strategy, eval_data in evaluations.items():
+        viz_lines.append(
+            f"{strategy:<15} {eval_data['num_chunks']:>8} "
+            f"{eval_data['avg_chunk_size']:>10.1f} "
+            f"{eval_data['top_score']:>12.4f}"
+        )
+
+    viz_lines.append("-" * 100)
+    viz_lines.append("")
+
+    # Top results for each strategy
+    for strategy, eval_data in evaluations.items():
+        viz_lines.append(f"\n{strategy.upper()} - Top Results:")
+        viz_lines.append("-" * 100)
+        for result in eval_data["results"]:
+            viz_lines.append(
+                f"  #{result['rank']} (Score: {result['score']:.4f}, "
+                f"{result['num_tokens']} tokens)"
+            )
+            viz_lines.append(f"  {result['text']}\n")
+
+    output_manager.save_text("chunk_visualization.txt", "\n".join(viz_lines))
 
     # Print comparison
     print_comparison_table(evaluations)
