@@ -12,7 +12,7 @@ from typing import List, Dict
 # Add shared module to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from shared import Config, Embedder, QdrantVectorStore, load_documents, OutputManager
+from shared import Config, Embedder, QdrantVectorStore, load_documents, OutputManager, EmbeddingCache
 
 from utils.config import DOCUMENTS_PATH, OUTPUT_PATH, TOP_K, ALPHA
 from utils.vector_retriever import VectorRetriever
@@ -78,9 +78,11 @@ def main():
     Config.validate()
 
     # Initialize components
+    cache_dir = Config.SHARED_PATH / "data"
     embedder = Embedder()
     vector_store = QdrantVectorStore()
     output_manager = OutputManager(OUTPUT_PATH)
+    cache = EmbeddingCache(cache_dir)
 
     print("=" * 100)
     print("Level 02: Hybrid Search with Qdrant and BM25")
@@ -93,7 +95,7 @@ def main():
 
     # Initialize retrievers
     print("🔧 Initializing retrievers...")
-    vector_retriever = VectorRetriever(COLLECTION_NAME, embedder, vector_store)
+    vector_retriever = VectorRetriever(COLLECTION_NAME, embedder, vector_store, cache)
     bm25_retriever = BM25Retriever(documents)
 
     # Index documents

@@ -8,6 +8,7 @@ __pycache__/
 # Outputs
 levels/*/output/*
 !levels/*/output/.gitkeep
+levels/shared/data/embedding_cache.json
 
 # IDE
 .vscode/
