@@ -19,7 +19,7 @@ from tools.rag.utils import (
 
 @registry.register(
     name="bm25_search",
-    description="Search for documents using BM25 keyword matching. Best for exact term matches, acronyms, technical terms, or when you need precise keyword-based retrieval. Use this when specific terminology matters.",
+    description="Search documents by exact keywords and terms. Use when looking for specific words, IDs, acronyms, or technical terms that must appear in the document.",
     parameters={
         "type": "object",
         "required": ["query"],

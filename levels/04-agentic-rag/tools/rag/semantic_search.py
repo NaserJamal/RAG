@@ -17,8 +17,8 @@ from tools.rag.utils import (
 
 
 @registry.register(
-    name="search_documents",
-    description="Search for relevant documents using semantic similarity (vector search). Best for conceptual queries and finding semantically related content. Use this when understanding meaning is more important than exact keyword matches.",
+    name="semantic_search",
+    description="Search documents by meaning and context. Use for general topics, concepts, or when you want to find related content based on semantic similarity rather than exact matches.",
     parameters={
         "type": "object",
         "required": ["query"],
@@ -41,7 +41,7 @@ from tools.rag.utils import (
         }
     }
 )
-def search_documents(query: str, top_k: int = 3, file_path: Optional[str] = None) -> Dict[str, Any]:
+def semantic_search(query: str, top_k: int = 3, file_path: Optional[str] = None) -> Dict[str, Any]:
     """
     Search for relevant documents using semantic similarity.
 
