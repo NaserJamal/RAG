@@ -138,9 +138,12 @@ def search_documents(query: str, top_k: int = 3) -> Dict[str, Any]:
             top_k=top_k
         )
 
-        # Format results with full content and metadata
+        # Format results with full content and metadata (filter out zero scores)
         results = []
         for doc_id, score in search_results:
+            # Skip results with zero or near-zero relevance
+            if score < 0.0001:
+                continue
             metadata = _vector_store.get_metadata(_collection_name, doc_id)
             if metadata:
                 results.append({
@@ -210,9 +213,12 @@ def bm25_search(query: str, top_k: int = 3) -> Dict[str, Any]:
         # Search using BM25
         search_results = _bm25_search.search(query, top_k=top_k)
 
-        # Format results with full content and metadata
+        # Format results with full content and metadata (filter out zero scores)
         results = []
         for doc_id, score in search_results:
+            # Skip results with zero or near-zero relevance
+            if score < 0.0001:
+                continue
             metadata = _vector_store.get_metadata(_collection_name, doc_id)
             if metadata:
                 results.append({
@@ -306,9 +312,12 @@ def hybrid_search(query: str, top_k: int = 3, alpha: float = 0.5) -> Dict[str, A
             vector_results, bm25_results, alpha=alpha
         )
 
-        # Take top-k and format with full content and metadata
+        # Take top-k and format with full content and metadata (filter out zero scores)
         results = []
         for doc_id, score in fused_results[:top_k]:
+            # Skip results with zero or near-zero relevance
+            if score < 0.0001:
+                continue
             metadata = _vector_store.get_metadata(_collection_name, doc_id)
             if metadata:
                 results.append({
