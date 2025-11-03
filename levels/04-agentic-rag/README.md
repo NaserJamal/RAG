@@ -39,7 +39,6 @@ This level demonstrates **agentic RAG** - a system where an AI agent autonomousl
 │   └── conversation/
 │       └── manager.py              # Conversation flow
 │
-├── .env.example
 ├── requirements.txt
 └── README.md
 ```
@@ -58,31 +57,33 @@ This level demonstrates **agentic RAG** - a system where an AI agent autonomousl
 
 ## Configuration
 
-1. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
+Edit the root `.env` file (at the repository root) and add the LLM API configuration:
 
-2. Edit `.env` and add your configuration:
-   ```
-   # LLM API (OpenRouter)
-   OPENROUTER_API_KEY=sk-or-v1-YOUR-API-KEY
-   OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
-   DEFAULT_MODEL=qwen/qwen3-coder-30b-a3b-instruct
+```bash
+# LLM API Configuration (Level 04: Agentic RAG)
+# OpenAI-compatible endpoint for the AI agent
+LLM_API_KEY=sk-or-v1-YOUR-API-KEY
+LLM_BASE_URL=https://openrouter.ai/api/v1
+LLM_MODEL=qwen/qwen3-coder-30b-a3b-instruct
 
-   # Embedding API (OpenAI-compatible)
-   EMBEDDING_API_KEY=your-api-key
-   EMBEDDING_BASE_URL=https://api.openai.com/v1
-   EMBEDDING_MODEL=text-embedding-3-small
+# Embedding API (already configured in earlier levels)
+EMBEDDING_API_KEY=your-embedding-api-key
+EMBEDDING_BASE_URL=https://api.openai.com/v1
+EMBEDDING_MODEL=text-embedding-3-small
 
-   # Qdrant Vector Database
-   QDRANT_HOST=localhost
-   QDRANT_PORT=6333
-   ```
+# Qdrant Vector Database (already configured in earlier levels)
+QDRANT_HOST=localhost
+QDRANT_PORT=6333
+```
+
+**Note**: This level uses the root `.env` file shared across all levels, so if you've completed earlier levels, you only need to add the `LLM_*` variables.
 
 ## Usage
 
+Navigate to the level directory and run:
+
 ```bash
+cd levels/04-agentic-rag
 python main.py
 ```
 
