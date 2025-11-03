@@ -12,7 +12,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
 from interface.conversation import run_conversation
-from interface.ui import display
+from interface.ui import print_welcome
 from core.tool_system import registry
 
 # Import tools to trigger registration
@@ -27,7 +27,7 @@ def main():
     """Run the AI agent demo."""
 
     # Display welcome message
-    display.print_welcome(registry)
+    print_welcome(registry)
 
     # Initialize LLM client (OpenAI-compatible API)
     client = OpenAI(

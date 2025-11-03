@@ -7,7 +7,7 @@ from typing import List, Dict, Any
 from openai import OpenAI
 
 from core.agent import run_agent_loop
-from interface.ui import display
+from interface.ui import print_separator, print_user_message, print_session_end, print_error
 
 
 def load_system_prompt() -> str:
@@ -43,7 +43,7 @@ def run_conversation(client: OpenAI, model: str) -> None:
             "content": system_prompt
         })
 
-    display.print_separator()
+    print_separator()
 
     while True:
         try:
@@ -57,14 +57,14 @@ def run_conversation(client: OpenAI, model: str) -> None:
                 "content": user_input
             })
 
-            display.print_user_message(user_input)
+            print_user_message(user_input)
 
             run_agent_loop(client, messages, model)
 
         except (KeyboardInterrupt, EOFError):
-            display.print_session_end()
+            print_session_end()
             break
 
         except Exception as e:
-            display.print_error(f"Conversation error: {e}")
+            print_error(f"Conversation error: {e}")
             break

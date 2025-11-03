@@ -13,7 +13,7 @@ from openai import OpenAI
 
 from core.tool_system import registry
 from core.agent.executor import execute_tool_call
-from interface.ui import display
+from interface.ui import print_thinking, print_assistant_message, print_error, print_separator
 
 
 def run_agent_loop(
@@ -35,7 +35,7 @@ def run_agent_loop(
     tools = registry.get_tool_definitions()
 
     while True:
-        display.print_thinking()
+        print_thinking()
 
         try:
             # Stream the LLM response
@@ -66,9 +66,9 @@ def run_agent_loop(
                 # Stream content to user
                 if delta.content:
                     if not assistant_header_printed:
-                        display.print_assistant_message("", stream=False)
+                        print_assistant_message("", stream=False)
                         assistant_header_printed = True
-                    display.print_assistant_message(delta.content, stream=True)
+                    print_assistant_message(delta.content, stream=True)
                     collected_content += delta.content
 
                 # Collect tool calls
@@ -156,7 +156,7 @@ def run_agent_loop(
                 break
 
         except Exception as e:
-            display.print_error(f"{type(e).__name__}: {e}")
+            print_error(f"{type(e).__name__}: {e}")
             break
 
-    display.print_separator()
+    print_separator()
