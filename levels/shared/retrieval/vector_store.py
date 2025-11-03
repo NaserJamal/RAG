@@ -19,7 +19,7 @@ from qdrant_client.models import (
     MatchValue,
 )
 
-from .config import Config
+from ..config import Config
 from .similarity import cosine_similarity
 
 

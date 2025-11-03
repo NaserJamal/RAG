@@ -2,22 +2,28 @@
 Shared components for RAG training levels.
 
 This package provides common functionality used across all RAG training levels,
-including configuration, embeddings, vector storage, and utilities.
+organized by domain:
+- config: System configuration and settings
+- data: Document loading and preprocessing
+- retrieval: Embeddings, vector storage, and similarity
+- io: Output management and formatting
+- utils: Logging and helper utilities
 """
 
 from .config import Config
-from .embedder import Embedder
-from .vector_store import VectorStore, QdrantVectorStore
-from .document_loader import load_documents
-from .similarity import cosine_similarity
-from .output_manager import OutputManager
+from .data import load_documents, count_documents
+from .retrieval import Embedder, VectorStore, QdrantVectorStore, cosine_similarity
+from .io import OutputManager
+from .utils import setup_logger
 
 __all__ = [
     "Config",
+    "load_documents",
+    "count_documents",
     "Embedder",
     "VectorStore",
     "QdrantVectorStore",
-    "load_documents",
     "cosine_similarity",
     "OutputManager",
+    "setup_logger",
 ]

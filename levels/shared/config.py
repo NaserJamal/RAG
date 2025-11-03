@@ -20,6 +20,8 @@ class Config:
     # Base paths
     BASE_PATH = Path(__file__).parent.parent.parent
     LEVELS_PATH = BASE_PATH / "levels"
+    SHARED_PATH = Path(__file__).parent
+    DOCUMENTS_PATH = SHARED_PATH / "data" / "documents"
 
     # Embedding API (OpenAI-compatible)
     EMBEDDING_API_KEY: str = os.getenv("EMBEDDING_API_KEY", "")
@@ -61,9 +63,17 @@ class Config:
         return cls.LEVELS_PATH / level_name
 
     @classmethod
-    def get_documents_path(cls, level_name: str) -> Path:
-        """Get the documents path (shared across all levels)."""
-        return cls.LEVELS_PATH / "shared" / "documents"
+    def get_documents_path(cls, level_name: str = None) -> Path:
+        """
+        Get the documents path (shared across all levels).
+
+        Args:
+            level_name: Ignored, kept for backward compatibility
+
+        Returns:
+            Path to shared documents directory
+        """
+        return cls.DOCUMENTS_PATH
 
     @classmethod
     def get_output_path(cls, level_name: str) -> Path:

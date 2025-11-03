@@ -10,7 +10,7 @@ from typing import List
 import numpy as np
 from openai import OpenAI
 
-from .config import Config
+from ..config import Config
 
 
 class Embedder:
