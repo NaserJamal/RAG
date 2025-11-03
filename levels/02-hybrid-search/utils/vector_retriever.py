@@ -6,13 +6,13 @@ This is a wrapper around the shared QdrantVectorStore for Level 02.
 
 import sys
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 import numpy as np
 
 # Add shared module to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from shared import Embedder, QdrantVectorStore
+from shared import Embedder, QdrantVectorStore, EmbeddingCache
 
 
 class VectorRetriever:
@@ -22,7 +22,8 @@ class VectorRetriever:
         self,
         collection_name: str,
         embedder: Embedder,
-        vector_store: QdrantVectorStore
+        vector_store: QdrantVectorStore,
+        cache: Optional[EmbeddingCache] = None
     ):
         """
         Initialize the vector retriever.
@@ -31,10 +32,12 @@ class VectorRetriever:
             collection_name: Name of the Qdrant collection
             embedder: Embedder instance for generating embeddings
             vector_store: QdrantVectorStore instance
+            cache: Optional EmbeddingCache instance for caching
         """
         self.collection_name = collection_name
         self.embedder = embedder
         self.vector_store = vector_store
+        self.cache = cache
         self.documents = []
 
     def index(self, documents: List[Dict]) -> None:
@@ -44,9 +47,17 @@ class VectorRetriever:
         Args:
             documents: List of document dictionaries with 'id' and 'content'
         """
+        self.documents = documents
+
+        # Check if caching is enabled and embeddings are cached
+        if self.cache and not self.cache.needs_embedding(
+            self.collection_name, documents, self.vector_store
+        ):
+            print(f"✅ Using cached embeddings (collection already exists with {len(documents)} documents)")
+            return
+
         print("🔢 Generating embeddings and building vector index...")
 
-        self.documents = documents
         doc_contents = [doc["content"] for doc in documents]
         doc_ids = [doc["id"] for doc in documents]
 
@@ -72,6 +83,10 @@ class VectorRetriever:
         )
 
         print(f"✅ Indexed {len(documents)} documents in vector store")
+
+        # Mark as cached
+        if self.cache:
+            self.cache.mark_embedded(self.collection_name, documents)
 
     def search(self, query: str, k: int = 5) -> List[Tuple[str, float]]:
         """

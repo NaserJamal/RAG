@@ -9,6 +9,10 @@ __pycache__/
 levels/*/output/*
 !levels/*/output/.gitkeep
 
+# Cache
+levels/shared/data/chunk_embeddings_cache.json
+levels/shared/data/embedding_cache.json
+
 # IDE
 .vscode/
 .idea/

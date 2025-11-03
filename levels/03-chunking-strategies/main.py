@@ -45,6 +45,7 @@ def main():
     Config.validate()
 
     # Initialize components
+    cache_dir = Config.SHARED_PATH / "data"
     embedder = Embedder()
     output_manager = OutputManager(OUTPUT_PATH)
 
@@ -66,8 +67,8 @@ def main():
     print(f"📋 Analyzing document: {test_doc['id']}")
     print(f"   Length: {len(test_doc['content'])} characters\n")
 
-    # Initialize evaluator
-    evaluator = ChunkEvaluator(embedder)
+    # Initialize evaluator with caching
+    evaluator = ChunkEvaluator(embedder, cache_dir)
 
     # Initialize chunkers
     fixed_chunker = FixedChunker()

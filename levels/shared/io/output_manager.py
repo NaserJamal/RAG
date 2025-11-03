@@ -9,6 +9,20 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional
+import numpy as np
+
+
+class NumpyEncoder(json.JSONEncoder):
+    """Custom JSON encoder that handles NumPy types."""
+
+    def default(self, obj):
+        if isinstance(obj, (np.integer, np.int64, np.int32)):
+            return int(obj)
+        elif isinstance(obj, (np.floating, np.float64, np.float32)):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super().default(obj)
 
 
 class OutputManager:
@@ -47,7 +61,7 @@ class OutputManager:
         output_file = self.output_path / f"{filename}.json"
 
         with open(output_file, "w", encoding="utf-8") as f:
-            json.dump(results, f, indent=2, ensure_ascii=False)
+            json.dump(results, f, indent=2, ensure_ascii=False, cls=NumpyEncoder)
 
         return output_file
 

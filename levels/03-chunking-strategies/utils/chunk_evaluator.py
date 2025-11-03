@@ -2,8 +2,10 @@
 
 import sys
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 import numpy as np
+import hashlib
+import json
 
 # Add shared module to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -14,14 +16,91 @@ from shared import Embedder
 class ChunkEvaluator:
     """Evaluates and compares chunking strategies."""
 
-    def __init__(self, embedder: Embedder):
+    def __init__(self, embedder: Embedder, cache_dir: Optional[Path] = None):
         """
         Initialize the evaluator.
 
         Args:
             embedder: Embedder instance for generating embeddings
+            cache_dir: Optional directory for caching chunk embeddings
         """
         self.embedder = embedder
+        self.cache_dir = cache_dir
+        self.embedding_cache = {}
+
+        if cache_dir:
+            self.cache_dir = Path(cache_dir)
+            self.cache_dir.mkdir(parents=True, exist_ok=True)
+            self.cache_file = self.cache_dir / "chunk_embeddings_cache.json"
+            self._load_cache()
+
+    def _load_cache(self):
+        """Load embedding cache from disk."""
+        if self.cache_file and self.cache_file.exists():
+            try:
+                with open(self.cache_file, "r") as f:
+                    cache_data = json.load(f)
+                    # Convert lists back to numpy arrays
+                    self.embedding_cache = {
+                        k: np.array(v) for k, v in cache_data.items()
+                    }
+            except (json.JSONDecodeError, IOError):
+                self.embedding_cache = {}
+
+    def _save_cache(self):
+        """Save embedding cache to disk."""
+        if self.cache_file:
+            try:
+                # Convert numpy arrays to lists for JSON serialization
+                cache_data = {
+                    k: v.tolist() for k, v in self.embedding_cache.items()
+                }
+                with open(self.cache_file, "w") as f:
+                    json.dump(cache_data, f)
+            except IOError:
+                pass
+
+    def _get_chunk_hash(self, chunk_text: str) -> str:
+        """Generate hash for a chunk of text."""
+        return hashlib.sha256(chunk_text.encode()).hexdigest()[:16]
+
+    def _get_embeddings(self, chunk_texts: List[str]) -> np.ndarray:
+        """
+        Get embeddings for chunks, using cache when possible.
+
+        Args:
+            chunk_texts: List of chunk text strings
+
+        Returns:
+            Numpy array of embeddings
+        """
+        embeddings = []
+        texts_to_embed = []
+        indices_to_embed = []
+
+        # Check cache for each chunk
+        for i, text in enumerate(chunk_texts):
+            chunk_hash = self._get_chunk_hash(text)
+            if chunk_hash in self.embedding_cache:
+                embeddings.append((i, self.embedding_cache[chunk_hash]))
+            else:
+                texts_to_embed.append(text)
+                indices_to_embed.append((i, chunk_hash))
+
+        # Embed uncached chunks
+        if texts_to_embed:
+            new_embeddings = self.embedder.embed(texts_to_embed)
+            for (idx, chunk_hash), embedding in zip(indices_to_embed, new_embeddings):
+                self.embedding_cache[chunk_hash] = embedding
+                embeddings.append((idx, embedding))
+
+            # Save cache after generating new embeddings
+            if self.cache_dir:
+                self._save_cache()
+
+        # Sort by original index and return as array
+        embeddings.sort(key=lambda x: x[0])
+        return np.array([emb for _, emb in embeddings])
 
     def evaluate(self, chunks: List[Dict], query: str, k: int = 3) -> Dict:
         """
@@ -42,9 +121,9 @@ class ChunkEvaluator:
                 "results": []
             }
 
-        # Generate embeddings for chunks
+        # Generate embeddings for chunks (with caching)
         chunk_texts = [chunk["text"] for chunk in chunks]
-        chunk_embeddings = self.embedder.embed(chunk_texts)
+        chunk_embeddings = self._get_embeddings(chunk_texts)
 
         # Generate query embedding
         query_embedding = self.embedder.embed_query(query)

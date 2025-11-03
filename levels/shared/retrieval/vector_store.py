@@ -8,6 +8,7 @@ and retrieval, including Qdrant integration.
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Dict, Any, Optional
 import numpy as np
+import uuid
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
     Distance,
@@ -18,7 +19,7 @@ from qdrant_client.models import (
     MatchValue,
 )
 
-from .config import Config
+from ..config import Config
 from .similarity import cosine_similarity
 
 
@@ -174,8 +175,12 @@ class QdrantVectorStore(VectorStore):
         points = []
         for idx, (vector, vector_id) in enumerate(zip(vectors, ids)):
             payload = metadata[idx] if metadata else {}
+            # Store the original string ID in the payload
+            payload["doc_id"] = vector_id
+            # Generate a UUID from the string ID for Qdrant
+            qdrant_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, vector_id))
             point = PointStruct(
-                id=vector_id,
+                id=qdrant_id,
                 vector=vector.tolist(),
                 payload=payload,
             )
@@ -221,7 +226,8 @@ class QdrantVectorStore(VectorStore):
             query_filter=query_filter,
         )
 
-        return [(str(result.id), result.score) for result in results]
+        # Return the original doc_id from payload instead of the UUID
+        return [(result.payload.get("doc_id", str(result.id)), result.score) for result in results]
 
     def delete_collection(self, collection_name: str) -> None:
         """
@@ -275,17 +281,35 @@ class QdrantVectorStore(VectorStore):
 
         Args:
             collection_name: Name of the collection
-            vector_id: ID of the vector
+            vector_id: ID of the vector (can be original doc_id or UUID)
 
         Returns:
             Metadata dictionary, or None if not found
         """
         try:
+            # First try as UUID
+            qdrant_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, vector_id))
             result = self.client.retrieve(
-                collection_name=collection_name, ids=[vector_id]
+                collection_name=collection_name, ids=[qdrant_id]
             )
             if result:
                 return result[0].payload
             return None
         except Exception:
             return None
+
+    def count_vectors(self, collection_name: str) -> int:
+        """
+        Count the number of vectors in a collection.
+
+        Args:
+            collection_name: Name of the collection
+
+        Returns:
+            Number of vectors in the collection
+        """
+        try:
+            collection_info = self.client.get_collection(collection_name=collection_name)
+            return collection_info.points_count
+        except Exception:
+            return 0
