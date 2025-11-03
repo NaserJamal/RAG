@@ -31,10 +31,18 @@ No prior experience with RAG, embeddings, or vector search required – we'll te
 # 1. Clone the repository
 git clone <your-repo-url>
 cd simple-rag
+# or
+code -r /path/to/cloned-repo
 
 # 2. Create virtual environment (recommended)
+# macOS/Linux:
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
+
+# Windows PowerShell:
+python -m venv venv
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+.\venv\Scripts\Activate.ps1
 
 # 3. Install dependencies
 pip install -r requirements.txt
