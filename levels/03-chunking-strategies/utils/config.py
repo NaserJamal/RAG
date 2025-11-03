@@ -9,7 +9,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from shared import Config as SharedConfig
 
 # Re-export shared configuration
-OPENAI_API_KEY = SharedConfig.OPENAI_API_KEY
+EMBEDDING_API_KEY = SharedConfig.EMBEDDING_API_KEY
+EMBEDDING_BASE_URL = SharedConfig.EMBEDDING_BASE_URL
 EMBEDDING_MODEL = SharedConfig.EMBEDDING_MODEL
 
 # Level-specific paths

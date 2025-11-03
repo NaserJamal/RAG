@@ -21,8 +21,9 @@ class Config:
     BASE_PATH = Path(__file__).parent.parent.parent
     LEVELS_PATH = BASE_PATH / "levels"
 
-    # OpenAI API
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    # Embedding API (OpenAI-compatible)
+    EMBEDDING_API_KEY: str = os.getenv("EMBEDDING_API_KEY", "")
+    EMBEDDING_BASE_URL: str = os.getenv("EMBEDDING_BASE_URL", "")
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
     EMBEDDING_DIMENSION: int = 1536  # text-embedding-3-small default
 
@@ -39,9 +40,13 @@ class Config:
     @classmethod
     def validate(cls) -> None:
         """Validate required configuration."""
-        if not cls.OPENAI_API_KEY:
+        if not cls.EMBEDDING_API_KEY:
             raise ValueError(
-                "OPENAI_API_KEY not found. Please set it in your .env file or environment."
+                "EMBEDDING_API_KEY not found. Please set it in your .env file or environment."
+            )
+        if not cls.EMBEDDING_BASE_URL:
+            raise ValueError(
+                "EMBEDDING_BASE_URL not found. Please set it in your .env file or environment."
             )
 
     @classmethod

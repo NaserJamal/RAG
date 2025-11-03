@@ -35,13 +35,15 @@ from shared import Config
 Config.validate()
 
 # Access configuration
-api_key = Config.OPENAI_API_KEY
+api_key = Config.EMBEDDING_API_KEY
+base_url = Config.EMBEDDING_BASE_URL
 qdrant_url = Config.get_qdrant_url()
 output_path = Config.get_output_path("01-basic-vector-search")
 ```
 
 **Configuration Variables:**
-- `OPENAI_API_KEY` - Required for embeddings
+- `EMBEDDING_API_KEY` - Required API key for embeddings
+- `EMBEDDING_BASE_URL` - Required base URL for OpenAI-compatible API
 - `EMBEDDING_MODEL` - Default: "text-embedding-3-small"
 - `QDRANT_HOST` - Default: "localhost"
 - `QDRANT_PORT` - Default: 6333
@@ -274,10 +276,9 @@ Each level creates its own collection:
 Create a `.env` file in the project root:
 
 ```bash
-# Required
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Optional - Embedding configuration
+# Required - Embedding API (OpenAI-compatible)
+EMBEDDING_API_KEY=your_embedding_api_key_here
+EMBEDDING_BASE_URL=your_embedding_base_url_here
 EMBEDDING_MODEL=text-embedding-3-small
 
 # Optional - Qdrant configuration
@@ -473,9 +474,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from shared import Config, Embedder
 ```
 
-### OpenAI API Errors
+### Embedding API Errors
 
-- Check API key: `echo $OPENAI_API_KEY`
+- Check API key: `echo $EMBEDDING_API_KEY`
+- Check base URL: `echo $EMBEDDING_BASE_URL`
 - Verify `.env` file exists
 - Check API quota/billing
 

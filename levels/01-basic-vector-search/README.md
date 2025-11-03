@@ -89,9 +89,9 @@ def cosine_similarity(query_embedding: np.ndarray, doc_embeddings: np.ndarray) -
 # Step 1: Ensure you're in the root directory and have installed dependencies
 pip install -r requirements.txt
 
-# Step 2: Set up your API key
+# Step 2: Set up your API credentials
 cp .env.example .env
-# Edit .env and add your OPENAI_API_KEY
+# Edit .env and add your EMBEDDING_API_KEY and EMBEDDING_BASE_URL
 
 # Step 3: Navigate to level directory
 cd levels/01-basic-vector-search
@@ -144,10 +144,11 @@ TOP_K = 5                                    # Number of results to return
 
 ## Common Issues & Solutions
 
-### Issue 1: "OpenAI API key not found"
+### Issue 1: "Embedding API key not found"
 **Solution**: Ensure your `.env` file exists in the root directory and contains:
 ```bash
-OPENAI_API_KEY=your_actual_key_here
+EMBEDDING_API_KEY=your_actual_key_here
+EMBEDDING_BASE_URL=your_actual_base_url_here
 ```
 
 ### Issue 2: Rate limit errors

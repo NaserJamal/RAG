@@ -1,8 +1,9 @@
 """
-Embedding generation utilities using OpenAI API.
+Embedding generation utilities using OpenAI-compatible API.
 
 Provides a clean interface for generating embeddings for both batch text
-processing and single query embeddings.
+processing and single query embeddings. Works with any OpenAI-compatible
+embedding endpoint (OpenAI, Groq, LocalAI, etc.).
 """
 
 from typing import List
@@ -13,23 +14,28 @@ from .config import Config
 
 
 class Embedder:
-    """Handles embedding generation using OpenAI API."""
+    """Handles embedding generation using OpenAI-compatible API."""
 
-    def __init__(self, model: str = None, api_key: str = None):
+    def __init__(self, model: str = None, api_key: str = None, base_url: str = None):
         """
         Initialize the embedder.
 
         Args:
-            model: OpenAI embedding model name (defaults to Config.EMBEDDING_MODEL)
-            api_key: OpenAI API key (defaults to Config.OPENAI_API_KEY)
+            model: Embedding model name (defaults to Config.EMBEDDING_MODEL)
+            api_key: API key (defaults to Config.EMBEDDING_API_KEY)
+            base_url: API base URL (defaults to Config.EMBEDDING_BASE_URL)
         """
         self.model = model or Config.EMBEDDING_MODEL
-        self.api_key = api_key or Config.OPENAI_API_KEY
+        self.api_key = api_key or Config.EMBEDDING_API_KEY
+        self.base_url = base_url or Config.EMBEDDING_BASE_URL
 
         if not self.api_key:
-            raise ValueError("OpenAI API key is required. Set OPENAI_API_KEY in environment.")
+            raise ValueError("Embedding API key is required. Set EMBEDDING_API_KEY in environment.")
 
-        self.client = OpenAI(api_key=self.api_key)
+        if not self.base_url:
+            raise ValueError("Embedding API base URL is required. Set EMBEDDING_BASE_URL in environment.")
+
+        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
 
     def embed(self, texts: List[str]) -> np.ndarray:
         """

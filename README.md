@@ -19,7 +19,7 @@ By the end, you'll understand the core building blocks of production RAG systems
 
 - **Python 3.8+**
 - **Docker and Docker Compose** (for Qdrant vector database)
-- **OpenAI API key** for embeddings generation
+- **OpenAI-compatible API key** for embeddings generation (OpenAI, Groq, LocalAI, etc.)
 - **Basic understanding of Python** and API usage
 - **Familiarity with command line** operations
 
@@ -42,9 +42,9 @@ pip install -r requirements.txt
 # 4. Start Qdrant vector database
 docker-compose up -d
 
-# 5. Configure API key
+# 5. Configure API credentials
 cp .env.example .env
-# Edit .env and add your OPENAI_API_KEY
+# Edit .env and add your EMBEDDING_API_KEY and EMBEDDING_BASE_URL
 
 # 6. Run Level 01
 cd levels/01-basic-vector-search
