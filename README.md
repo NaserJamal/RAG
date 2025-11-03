@@ -76,14 +76,14 @@ Learn the fundamentals of semantic search using embeddings and cosine similarity
 
 ---
 
-### 🔀 Level 02: Hybrid Search
-Combine semantic search with keyword matching for more robust retrieval.
+### 🔀 Level 02: Semantic vs Exact Match
+Compare semantic search with keyword matching to understand when each approach excels.
 
-**What you'll learn**: BM25 keyword search, Reciprocal Rank Fusion, balancing semantic vs exact matching
+**What you'll learn**: BM25 keyword search, exact matching strength, semantic understanding, comparing retrieval approaches
 
-**Time**: 25 minutes | **Cost**: ~$0.002
+**Time**: 20 minutes | **Cost**: ~$0.002
 
-[Start Level 02 →](levels/02-hybrid-search/README.md)
+[Start Level 02 →](levels/02-semantic-vs-exact/README.md)
 
 ---
 
@@ -230,15 +230,15 @@ simple-rag/
     │   ├── main.py                  # Uses shared components
     │   └── output/                  # Generated results
     │
-    ├── 02-hybrid-search/
+    ├── 02-semantic-vs-exact/
     │   ├── README.md
     │   ├── main.py                  # Entry point
+    │   ├── citizens/                # Sample documents with IDs
     │   ├── output/
     │   └── utils/                   # Level-specific utilities
     │       ├── config.py            # Extends shared config
     │       ├── vector_retriever.py  # Qdrant wrapper
-    │       ├── bm25_retriever.py    # BM25 keyword search
-    │       └── hybrid_retriever.py  # RRF fusion
+    │       └── bm25_retriever.py    # BM25 keyword search
     │
     ├── 03-chunking-strategies/
     │   ├── README.md
@@ -265,7 +265,7 @@ simple-rag/
 
 ### For Experienced Developers
 - You can jump to any level, but we recommend at least skimming Level 01
-- Level 02's RRF implementation is particularly elegant
+- Level 02 demonstrates the trade-offs between semantic and exact matching
 - Level 03's semantic chunking showcases advanced techniques
 
 ### Time Commitment
@@ -280,7 +280,7 @@ All levels use OpenAI's `text-embedding-3-small` model for cost efficiency:
 | Level | One-Time Setup | Per Query | 100 Queries Total |
 |-------|---------------|-----------|-------------------|
 | 01 - Basic Vector | $0.0001 | $0.00001 | $0.001 |
-| 02 - Hybrid Search | $0.0001 | $0.00001 | $0.001 |
+| 02 - Semantic vs Exact | $0.0001 | $0.00001 | $0.001 |
 | 03 - Chunking (Fixed/Recursive) | $0.0005 | $0.00001 | $0.002 |
 | 03 - Chunking (Semantic) | $0.01 | $0.0001 | $0.02 |
 

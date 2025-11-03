@@ -200,11 +200,11 @@ Try modifying the code to implement one of these features!
 ## What's Next?
 
 Vector search is powerful but has limitations. It struggles with:
-- Exact keyword matching (e.g., product codes, acronyms)
+- Exact keyword matching (e.g., product codes, IDs, serial numbers)
 - Rare or specialized terminology
-- Queries that need both semantic and exact matching
+- Queries that need precise exact matching
 
-➡️ Continue to [Level 02: Hybrid Search](../02-hybrid-search/README.md) to learn how to combine vector search with keyword search for better results.
+➡️ Continue to [Level 02: Semantic vs Exact Match](../02-semantic-vs-exact/README.md) to learn when to use semantic search vs exact keyword matching.
 
 ---
 

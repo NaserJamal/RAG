@@ -44,7 +44,6 @@ def format_results(results: List[tuple], documents: List[Dict]) -> List[Dict]:
 
 
 def print_comparison(
-    query: str,
     vector_results: List[Dict],
     bm25_results: List[Dict]
 ):
@@ -148,7 +147,7 @@ def main():
         bm25_results = format_results(bm25_retriever.search(query, k=query_info["k"]), documents)
 
         # Print comparison
-        print_comparison(query, vector_results, bm25_results)
+        print_comparison(vector_results, bm25_results)
 
         all_results.append({
             "query": query,
