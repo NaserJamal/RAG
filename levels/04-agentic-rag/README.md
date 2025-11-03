@@ -1,70 +1,218 @@
 # Level 04: Agentic RAG
 
-## Status: Coming Soon
+An AI agent with tool calling capabilities that can intelligently search and retrieve information from a document collection to answer user questions.
 
-This level will cover advanced agentic RAG patterns, including:
+## Overview
 
-### Planned Topics
+This level demonstrates **agentic RAG** - a system where an AI agent autonomously decides when to search for information, formulates effective queries, and uses retrieved context to provide accurate answers. Unlike traditional RAG systems that always retrieve, the agent makes intelligent decisions about when and how to use its search tool.
 
-**Self-Correcting Retrieval**
-- Evaluate retrieval quality automatically
-- Re-query with refined terms if results are poor
-- Iterative improvement loops
+## Features
 
-**Tool Use and Function Calling**
-- Integrate external tools (calculators, APIs, databases)
-- Decide when to retrieve vs when to compute
-- Multi-step reasoning with tool selection
+- **Intelligent Tool Use**: Agent decides when to search based on user query
+- **Semantic Search**: Leverages Qdrant vector database for semantic document retrieval
+- **Clean Architecture**: Separation of concerns between agent logic, tools, and interface
+- **Interactive Sessions**: Multi-turn conversations with context
+- **Streaming Responses**: Real-time LLM output
+- **Robust Error Handling**: Graceful degradation when searches fail
 
-**Query Planning and Decomposition**
-- Break complex queries into sub-queries
-- Execute retrieval steps in optimal order
-- Synthesize results from multiple retrievals
+## Project Structure
 
-**Multi-Step Reasoning**
-- Chain-of-thought prompting for RAG
-- Reasoning over retrieved context
-- Self-verification of answers
+```
+04-agentic-rag/
+├── main.py                          # Entry point
+│
+├── core/                            # Core framework
+│   ├── agent/                       # Agent orchestration
+│   │   ├── loop.py                 # Main agent loop
+│   │   └── executor.py             # Tool execution
+│   │
+│   └── tool_system/                 # Tool infrastructure
+│       └── registry.py             # Tool registration system
+│
+├── tools/                           # Tool implementations
+│   └── qdrant_search.py            # Semantic document search
+│
+├── interface/                       # User interface
+│   ├── ui/
+│   │   └── display.py              # Terminal output
+│   │
+│   └── conversation/
+│       └── manager.py              # Conversation flow
+│
+├── .env.example
+├── requirements.txt
+└── README.md
+```
 
-**Iterative Refinement**
-- Generate initial answer
-- Identify gaps or uncertainties
-- Retrieve additional context
-- Refine answer based on new information
+## Installation
 
-### Why Agentic RAG?
+1. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Traditional RAG follows a simple pattern:
-1. User asks question
-2. Retrieve relevant documents
-3. Generate answer from documents
+2. **Set up Qdrant** (if not already running):
+   ```bash
+   docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
+   ```
 
-Agentic RAG adds intelligence and autonomy:
-1. User asks question
-2. Agent **plans** how to answer (may need multiple retrievals, tools, reasoning steps)
-3. Agent **executes** plan (retrieves, uses tools, reasons)
-4. Agent **evaluates** quality (is answer complete? accurate?)
-5. Agent **refines** if needed (retrieve more, reconsider, verify)
-6. Generate final answer
+## Configuration
 
-This enables handling much more complex queries and producing higher-quality answers.
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
 
-### Technologies
+2. Edit `.env` and add your configuration:
+   ```
+   # LLM API (OpenRouter)
+   OPENROUTER_API_KEY=sk-or-v1-YOUR-API-KEY
+   OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+   DEFAULT_MODEL=qwen/qwen3-coder-30b-a3b-instruct
 
-This level will likely use:
-- LangChain or LlamaIndex for agentic workflows
-- OpenAI function calling or tool use APIs
-- ReAct (Reasoning + Acting) patterns
-- Self-consistency and verification techniques
+   # Embedding API (OpenAI-compatible)
+   EMBEDDING_API_KEY=your-api-key
+   EMBEDDING_BASE_URL=https://api.openai.com/v1
+   EMBEDDING_MODEL=text-embedding-3-small
 
-## Check Back Soon!
+   # Qdrant Vector Database
+   QDRANT_HOST=localhost
+   QDRANT_PORT=6333
+   ```
 
-This level requires significant development and testing. We're committed to the same quality and production-ready code as Levels 01-03.
+## Usage
 
-In the meantime:
-- Complete Levels 01-03 to build a solid RAG foundation
-- Experiment with combining the techniques you've learned
-- Consider how you might add "intelligence" to your retrieval pipeline
+```bash
+python main.py
+```
+
+The agent will:
+1. Initialize the document collection (first run only)
+2. Start an interactive session
+3. Use the search tool when needed to answer your questions
+
+### Example Session
+
+```
+────────────────────────────────────────────────────────────
+
+You: What is semantic chunking?
+
+💭 Agent thinking...
+
+🔧 Tool Call: search_documents
+   Arguments: {
+     "query": "semantic chunking",
+     "top_k": 3
+   }
+   ✓ Result: {
+     "query": "semantic chunking",
+     "result_count": 3,
+     "results": [
+       {
+         "document_id": "chunking-strategies/semantic.txt",
+         "relevance_score": 0.89,
+         "content": "Semantic chunking divides text based on meaning..."
+       }
+     ]
+   }
+
+💭 Agent thinking...
+
+🤖 Assistant:
+Semantic chunking is an advanced technique that divides text based on
+semantic meaning rather than fixed sizes. It groups related content
+together by analyzing the semantic similarity between sentences...
+
+────────────────────────────────────────────────────────────
+```
+
+## How It Works
+
+### Agent Flow
+
+1. **User Query** → Agent receives the question
+2. **Planning** → LLM decides if search is needed
+3. **Tool Execution** → If needed, searches document collection
+4. **Context Integration** → LLM receives search results
+5. **Response** → Agent formulates answer using retrieved context
+
+### Search Tool
+
+The `search_documents` tool:
+- Generates query embeddings using OpenAI API
+- Performs semantic search in Qdrant
+- Returns relevant documents with scores
+- Handles initialization and error cases gracefully
+
+### Key Differences from Traditional RAG
+
+| Traditional RAG | Agentic RAG |
+|----------------|-------------|
+| Always retrieves for every query | Decides when retrieval is needed |
+| Single retrieval pass | Can make multiple searches |
+| Fixed query | Can reformulate queries |
+| No tool selection | Chooses appropriate tools |
+
+## Adding New Tools
+
+Create a new file in `tools/` and use the decorator pattern:
+
+```python
+from core.tool_system import registry
+
+@registry.register(
+    name="your_tool_name",
+    description="What your tool does",
+    parameters={
+        "type": "object",
+        "required": ["param1"],
+        "properties": {
+            "param1": {
+                "type": "string",
+                "description": "Description of parameter"
+            }
+        }
+    }
+)
+def your_tool_name(param1: str) -> dict:
+    """Your tool implementation."""
+    return {"result": f"Processed {param1}"}
+```
+
+Import it in `tools/__init__.py` and it's automatically available!
+
+## Available Tool
+
+- **`search_documents`**: Semantic search over the document collection
+  - Parameters: `query` (string), `top_k` (integer, 1-10)
+  - Returns: Relevant documents with content and relevance scores
+
+## Technologies Used
+
+- **OpenRouter**: LLM API for agent reasoning
+- **OpenAI API**: Text embeddings for semantic search
+- **Qdrant**: Vector database for document storage and retrieval
+- **Rich**: Terminal UI formatting
+- **Tool Calling**: Native function calling support
+
+## Learning Outcomes
+
+This level demonstrates:
+- **Agentic patterns**: Autonomous decision-making in RAG
+- **Tool calling**: LLM function calling for tool selection
+- **Semantic search**: Vector-based document retrieval
+- **Clean architecture**: Maintainable, extensible codebase
+- **Error handling**: Robust production-ready patterns
+- **Streaming**: Real-time response display
+
+## Next Steps
+
+- Add more tools (web search, calculator, etc.)
+- Implement query reformulation for poor results
+- Add retrieval quality evaluation
+- Enable multi-step reasoning chains
+- Implement answer verification
 
 ---
 
