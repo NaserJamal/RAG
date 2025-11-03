@@ -62,8 +62,8 @@ class Config:
 
     @classmethod
     def get_documents_path(cls, level_name: str) -> Path:
-        """Get the documents path for a specific level."""
-        return cls.get_level_path(level_name) / "documents"
+        """Get the documents path (shared across all levels)."""
+        return cls.LEVELS_PATH / "shared" / "documents"
 
     @classmethod
     def get_output_path(cls, level_name: str) -> Path:
