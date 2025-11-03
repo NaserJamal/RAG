@@ -18,51 +18,34 @@ from shared import (
     load_documents,
     OutputManager,
 )
+from utils import print_header, print_step, print_success, get_user_query, display_results
 
 LEVEL_NAME = "01-basic-vector-search"
 COLLECTION_NAME = "level_01_basic_search"
 
 
-def main():
-    """Main execution function."""
-    # Validate configuration
-    Config.validate()
-
-    # Setup paths
-    documents_path = Config.get_documents_path(LEVEL_NAME)
-    output_path = Config.get_output_path(LEVEL_NAME)
-
-    # Initialize components
-    embedder = Embedder()
+def setup_vector_store(embedder, documents_path):
+    """Initialize vector store with documents."""
     vector_store = QdrantVectorStore()
-    output_manager = OutputManager(output_path)
 
-    print("=" * 80)
-    print("Level 01: Basic Vector Search with Qdrant")
-    print("=" * 80)
-
-    # Load documents
-    print("\n📄 Loading documents...")
+    print_step("📄 Loading documents...")
     documents = load_documents(documents_path)
-    print(f"✅ Loaded {len(documents)} documents")
+    print_success(f"Loaded {len(documents)} documents")
 
-    # Generate embeddings
-    print("\n🔢 Generating embeddings...")
+    print_step("🔢 Generating embeddings...")
     doc_contents = [doc["content"] for doc in documents]
     doc_ids = [doc["id"] for doc in documents]
     embeddings = embedder.embed(doc_contents)
-    print(f"✅ Generated {len(embeddings)} embeddings")
+    print_success(f"Generated {len(embeddings)} embeddings")
 
-    # Create vector store collection
-    print("\n🗄️  Setting up Qdrant collection...")
+    print_step("🗄️  Setting up Qdrant collection...")
     vector_store.create_collection(
         collection_name=COLLECTION_NAME,
         vector_dim=embedder.get_embedding_dimension()
     )
-    print(f"✅ Collection '{COLLECTION_NAME}' created")
+    print_success(f"Collection '{COLLECTION_NAME}' created")
 
-    # Add vectors to store
-    print("\n📥 Adding vectors to Qdrant...")
+    print_step("📥 Adding vectors to Qdrant...")
     metadata = [{"content": doc["content"], "path": doc["path"]} for doc in documents]
     vector_store.add_vectors(
         collection_name=COLLECTION_NAME,
@@ -70,22 +53,20 @@ def main():
         ids=doc_ids,
         metadata=metadata
     )
-    print(f"✅ Added {len(embeddings)} vectors to Qdrant")
+    print_success(f"Added {len(embeddings)} vectors to Qdrant")
 
-    # Example query
-    query = "What is the vacation policy?"
-    print(f"\n🔍 Searching for: '{query}'")
+    return vector_store
 
-    # Generate query embedding and search
+
+def search_query(query, embedder, vector_store):
+    """Execute search for a query and return formatted results."""
     query_embedding = embedder.embed_query(query)
     search_results = vector_store.search(
         collection_name=COLLECTION_NAME,
         query_vector=query_embedding,
         top_k=Config.DEFAULT_TOP_K
     )
-    print(f"✅ Found {len(search_results)} results")
 
-    # Format results
     results = []
     for rank, (doc_id, score) in enumerate(search_results, 1):
         doc_metadata = vector_store.get_metadata(COLLECTION_NAME, doc_id)
@@ -100,18 +81,12 @@ def main():
             "preview": preview
         })
 
-    # Display results
-    print("\n" + "=" * 80)
-    print("Top Results:")
-    print("=" * 80 + "\n")
+    return results
 
-    for result in results:
-        print(f"#{result['rank']} - {result['document_id']} (Score: {result['score']:.4f})")
-        print(f"   {result['preview'][:150]}...")
-        print()
 
-    # Save results
-    print("💾 Saving results...")
+def save_results(query, results, output_manager, output_path):
+    """Save search results to files."""
+    print_step("💾 Saving results...")
 
     output_data = {
         "query": query,
@@ -127,7 +102,6 @@ def main():
 
     output_manager.save_results("results", output_data)
 
-    # Save human-readable format
     readable_text = output_manager.format_search_results(
         query=query,
         results=results,
@@ -135,14 +109,43 @@ def main():
     )
     output_manager.save_text("query_log.txt", readable_text)
 
-    print(f"✅ Results saved to {output_path}/")
-    print(f"   - results.json")
-    print(f"   - query_log.txt")
+    print_success(f"Results saved to {output_path}/")
+    print("   - results.json")
+    print("   - query_log.txt")
+
+
+def main():
+    """Main execution function."""
+    Config.validate()
+
+    documents_path = Config.get_documents_path(LEVEL_NAME)
+    output_path = Config.get_output_path(LEVEL_NAME)
+
+    embedder = Embedder()
+    output_manager = OutputManager(output_path)
+
+    print_header("Level 01: Basic Vector Search with Qdrant")
+
+    # Setup vector store once
+    vector_store = setup_vector_store(embedder, documents_path)
+
+    # Interactive query loop
+    while True:
+        query = get_user_query()
+
+        if not query:
+            break
+
+        results = search_query(query, embedder, vector_store)
+        display_results(results, query)
+        save_results(query, results, output_manager, output_path)
 
 
 if __name__ == "__main__":
     try:
         main()
+    except KeyboardInterrupt:
+        print("\n\n👋 Goodbye!")
     except Exception as e:
         print(f"❌ Error: {e}")
         raise
