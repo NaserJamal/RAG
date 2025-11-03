@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import List, Dict
 
 # Add shared module to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 
 def build_document_tree(documents_path: Path) -> str:

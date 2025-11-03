@@ -7,7 +7,7 @@ documents using exact term matching and traditional information retrieval.
 
 from typing import Dict, Any, Optional
 from core.tool_system import registry
-from tools.rag.common import (
+from tools.rag.utils import (
     get_bm25_search,
     get_vector_store,
     get_collection_name,

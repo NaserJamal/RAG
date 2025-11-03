@@ -11,7 +11,7 @@ from openai import OpenAI
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from shared import Config
-from tools.rag.tree_builder import build_document_tree
+from tools.rag.utils import build_document_tree
 from core.agent import run_agent_loop
 from interface.ui import print_separator, print_user_message, print_session_end, print_error
 

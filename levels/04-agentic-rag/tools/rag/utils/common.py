@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 # Add shared module to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from shared import Embedder, QdrantVectorStore, load_documents, Config
 from shared.retrieval.bm25 import BM25Search

@@ -7,7 +7,7 @@ relevant documents from the Qdrant vector database using embedding similarity.
 
 from typing import Dict, Any, Optional
 from core.tool_system import registry
-from tools.rag.common import (
+from tools.rag.utils import (
     get_embedder,
     get_vector_store,
     get_collection_name,
