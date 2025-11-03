@@ -11,7 +11,7 @@ from tools.rag.common import (
     get_bm25_search,
     get_vector_store,
     get_collection_name,
-    filter_documents_by_file,
+    filter_documents_by_path,
     format_results,
     BM25Search
 )
@@ -37,7 +37,7 @@ from tools.rag.common import (
             },
             "file_path": {
                 "type": "string",
-                "description": "Optional: Filter search to a specific file (e.g., 'company-kb/expense-reimbursement.txt'). If not provided, searches all documents."
+                "description": "Optional: Filter to a specific file or folder. Examples: 'company-kb/vacation-policy.txt' (exact file), 'company-kb' (all files in folder), 'company-kb/hr/policies' (nested folder). If not provided, searches all documents."
             }
         }
     }
@@ -49,7 +49,7 @@ def bm25_search(query: str, top_k: int = 3, file_path: Optional[str] = None) -> 
     Args:
         query: Search query string
         top_k: Number of top results to return (default: 3, max: 10)
-        file_path: Optional file path to filter search (e.g., 'company-kb/expense-reimbursement.txt')
+        file_path: Optional file or folder path to filter (e.g., 'company-kb' or 'company-kb/vacation-policy.txt')
 
     Returns:
         Dictionary containing:
@@ -57,7 +57,7 @@ def bm25_search(query: str, top_k: int = 3, file_path: Optional[str] = None) -> 
         - query: The original query
         - search_type: Type of search performed
         - result_count: Number of results returned
-        - file_filter: File path filter applied (if any)
+        - file_filter: File/folder path filter applied (if any)
     """
     try:
         # Validate and clamp top_k
@@ -67,24 +67,24 @@ def bm25_search(query: str, top_k: int = 3, file_path: Optional[str] = None) -> 
         vector_store = get_vector_store()
         collection_name = get_collection_name()
 
-        # Handle file-specific search
+        # Handle file/folder-specific search
         if file_path:
-            # Filter documents to only the specified file
-            filtered_docs = filter_documents_by_file(file_path)
+            # Filter documents to specified file or folder
+            filtered_docs = filter_documents_by_path(file_path)
 
             if not filtered_docs:
                 return {
-                    "error": f"File not found: {file_path}",
+                    "error": f"No documents found matching path: {file_path}",
                     "query": query,
                     "search_type": "bm25",
                     "result_count": 0,
                     "results": []
                 }
 
-            # Create a new BM25 index for just this file
-            file_bm25 = BM25Search(filtered_docs)
-            file_bm25.index()
-            search_results = file_bm25.search(query, top_k=top_k)
+            # Create a new BM25 index for the filtered documents
+            filtered_bm25 = BM25Search(filtered_docs)
+            filtered_bm25.index()
+            search_results = filtered_bm25.search(query, top_k=top_k)
         else:
             # Use global BM25 index
             bm25 = get_bm25_search()

@@ -11,6 +11,7 @@ from tools.rag.common import (
     get_embedder,
     get_vector_store,
     get_collection_name,
+    filter_results_by_path,
     format_results
 )
 
@@ -35,7 +36,7 @@ from tools.rag.common import (
             },
             "file_path": {
                 "type": "string",
-                "description": "Optional: Filter search to a specific file (e.g., 'company-kb/expense-reimbursement.txt'). If not provided, searches all documents."
+                "description": "Optional: Filter to a specific file or folder. Examples: 'company-kb/vacation-policy.txt' (exact file), 'company-kb' (all files in folder), 'company-kb/hr/policies' (nested folder). If not provided, searches all documents."
             }
         }
     }
@@ -47,14 +48,14 @@ def search_documents(query: str, top_k: int = 3, file_path: Optional[str] = None
     Args:
         query: Search query string
         top_k: Number of top results to return (default: 3, max: 10)
-        file_path: Optional file path to filter search (e.g., 'company-kb/expense-reimbursement.txt')
+        file_path: Optional file or folder path to filter (e.g., 'company-kb' or 'company-kb/vacation-policy.txt')
 
     Returns:
         Dictionary containing:
         - results: List of relevant documents with content and scores
         - query: The original query
         - result_count: Number of results returned
-        - file_filter: File path filter applied (if any)
+        - file_filter: File/folder path filter applied (if any)
     """
     try:
         # Validate and clamp top_k
@@ -68,18 +69,21 @@ def search_documents(query: str, top_k: int = 3, file_path: Optional[str] = None
         # Generate query embedding
         query_embedding = embedder.embed_query(query)
 
-        # Build filter conditions if file_path is provided
-        filter_conditions = None
-        if file_path:
-            filter_conditions = {"doc_id": file_path}
+        # Search in Qdrant (retrieve more results if filtering by folder)
+        # We'll filter after retrieval to support folder-level filtering
+        search_limit = top_k * 3 if file_path and not file_path.endswith('.txt') else top_k
 
-        # Search in Qdrant
         search_results = vector_store.search(
             collection_name=collection_name,
             query_vector=query_embedding,
-            top_k=top_k,
-            filter_conditions=filter_conditions
+            top_k=search_limit
         )
+
+        # Apply folder/file filtering if specified
+        if file_path:
+            search_results = filter_results_by_path(search_results, file_path)
+            # Take only top_k after filtering
+            search_results = search_results[:top_k]
 
         # Format results with full content and metadata
         results = format_results(search_results, vector_store, collection_name)

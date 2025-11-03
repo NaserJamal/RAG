@@ -18,7 +18,8 @@ from shared.retrieval.bm25 import BM25Search
 __all__ = [
     'Embedder', 'QdrantVectorStore', 'BM25Search',
     'initialize', 'get_embedder', 'get_vector_store', 'get_bm25_search',
-    'get_collection_name', 'get_documents', 'filter_documents_by_file', 'format_results'
+    'get_collection_name', 'get_documents', 'filter_documents_by_path',
+    'filter_results_by_path', 'format_results'
 ]
 
 
@@ -125,12 +126,17 @@ def get_documents() -> List[Dict[str, Any]]:
     return _documents
 
 
-def filter_documents_by_file(file_path: Optional[str]) -> List[Dict[str, Any]]:
+def filter_documents_by_path(file_path: Optional[str]) -> List[Dict[str, Any]]:
     """
-    Filter documents by file path.
+    Filter documents by file path or folder path.
+
+    Supports both exact file matching and folder prefix matching:
+    - 'company-kb/vacation-policy.txt' -> exact file match
+    - 'company-kb' -> all files under company-kb folder
+    - 'company-kb/hr/policies' -> all files under nested folder
 
     Args:
-        file_path: Optional file path to filter (e.g., 'company-kb/expense-reimbursement.txt')
+        file_path: Optional file or folder path to filter
 
     Returns:
         Filtered list of documents, or all documents if file_path is None
@@ -140,8 +146,42 @@ def filter_documents_by_file(file_path: Optional[str]) -> List[Dict[str, Any]]:
     if not file_path:
         return _documents
 
-    # Filter documents matching the file path
-    return [doc for doc in _documents if doc["id"] == file_path]
+    # Check if it's an exact file match (ends with .txt)
+    if file_path.endswith('.txt'):
+        return [doc for doc in _documents if doc["id"] == file_path]
+
+    # Otherwise, treat as folder - match all files under this path
+    prefix = file_path if file_path.endswith('/') else file_path + '/'
+    return [doc for doc in _documents if doc["id"].startswith(prefix)]
+
+
+def filter_results_by_path(
+    results: List[tuple],
+    file_path: Optional[str]
+) -> List[tuple]:
+    """
+    Filter search results by file path or folder path.
+
+    Applies post-filtering to search results to support folder-level filtering.
+    Used for semantic search where we filter after vector retrieval.
+
+    Args:
+        results: List of (doc_id, score) tuples from search
+        file_path: Optional file or folder path to filter
+
+    Returns:
+        Filtered list of (doc_id, score) tuples
+    """
+    if not file_path:
+        return results
+
+    # Check if it's an exact file match (ends with .txt)
+    if file_path.endswith('.txt'):
+        return [(doc_id, score) for doc_id, score in results if doc_id == file_path]
+
+    # Otherwise, treat as folder - match all files under this path
+    prefix = file_path if file_path.endswith('/') else file_path + '/'
+    return [(doc_id, score) for doc_id, score in results if doc_id.startswith(prefix)]
 
 
 def format_results(
@@ -162,8 +202,9 @@ def format_results(
     """
     results = []
     for doc_id, score in search_results:
-        # Skip results with zero or near-zero relevance
-        if score < 0.0001:
+        # Skip results with exactly zero relevance (no match at all)
+        # Note: Small positive scores are still relevant, especially in single-file searches
+        if score == 0:
             continue
 
         metadata = vector_store.get_metadata(collection_name, doc_id)
