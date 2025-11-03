@@ -8,6 +8,7 @@ organized by domain:
 - retrieval: Embeddings, vector storage, and similarity
 - io: Output management and formatting
 - utils: Logging and helper utilities
+- cache: Embedding cache management
 """
 
 from .config import Config
@@ -15,6 +16,7 @@ from .data import load_documents, count_documents
 from .retrieval import Embedder, VectorStore, QdrantVectorStore, cosine_similarity
 from .io import OutputManager
 from .utils import setup_logger
+from .cache import EmbeddingCache
 
 __all__ = [
     "Config",
@@ -26,4 +28,5 @@ __all__ = [
     "cosine_similarity",
     "OutputManager",
     "setup_logger",
+    "EmbeddingCache",
 ]

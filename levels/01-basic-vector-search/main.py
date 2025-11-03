@@ -17,6 +17,7 @@ from shared import (
     QdrantVectorStore,
     load_documents,
     OutputManager,
+    EmbeddingCache,
 )
 from utils import print_header, print_step, print_success, get_user_query, display_results
 
@@ -24,7 +25,7 @@ LEVEL_NAME = "01-basic-vector-search"
 COLLECTION_NAME = "level_01_basic_search"
 
 
-def setup_vector_store(embedder, documents_path):
+def setup_vector_store(embedder, documents_path, cache):
     """Initialize vector store with documents."""
     vector_store = QdrantVectorStore()
 
@@ -32,28 +33,35 @@ def setup_vector_store(embedder, documents_path):
     documents = load_documents(documents_path)
     print_success(f"Loaded {len(documents)} documents")
 
-    print_step("🔢 Generating embeddings...")
-    doc_contents = [doc["content"] for doc in documents]
-    doc_ids = [doc["id"] for doc in documents]
-    embeddings = embedder.embed(doc_contents)
-    print_success(f"Generated {len(embeddings)} embeddings")
+    # Check if embedding is needed
+    if cache.needs_embedding(COLLECTION_NAME, documents, vector_store):
+        print_step("🔢 Generating embeddings...")
+        doc_contents = [doc["content"] for doc in documents]
+        doc_ids = [doc["id"] for doc in documents]
+        embeddings = embedder.embed(doc_contents)
+        print_success(f"Generated {len(embeddings)} embeddings")
 
-    print_step("🗄️  Setting up Qdrant collection...")
-    vector_store.create_collection(
-        collection_name=COLLECTION_NAME,
-        vector_dim=embedder.get_embedding_dimension()
-    )
-    print_success(f"Collection '{COLLECTION_NAME}' created")
+        print_step("🗄️  Setting up Qdrant collection...")
+        vector_store.create_collection(
+            collection_name=COLLECTION_NAME,
+            vector_dim=embedder.get_embedding_dimension()
+        )
+        print_success(f"Collection '{COLLECTION_NAME}' created")
 
-    print_step("📥 Adding vectors to Qdrant...")
-    metadata = [{"content": doc["content"], "path": doc["path"]} for doc in documents]
-    vector_store.add_vectors(
-        collection_name=COLLECTION_NAME,
-        vectors=embeddings,
-        ids=doc_ids,
-        metadata=metadata
-    )
-    print_success(f"Added {len(embeddings)} vectors to Qdrant")
+        print_step("📥 Adding vectors to Qdrant...")
+        metadata = [{"content": doc["content"], "path": doc["path"]} for doc in documents]
+        vector_store.add_vectors(
+            collection_name=COLLECTION_NAME,
+            vectors=embeddings,
+            ids=doc_ids,
+            metadata=metadata
+        )
+        print_success(f"Added {len(embeddings)} vectors to Qdrant")
+
+        # Mark as cached
+        cache.mark_embedded(COLLECTION_NAME, documents)
+    else:
+        print_success(f"Using cached embeddings (collection already exists with {len(documents)} documents)")
 
     return vector_store
 
@@ -120,14 +128,16 @@ def main():
 
     documents_path = Config.get_documents_path(LEVEL_NAME)
     output_path = Config.get_output_path(LEVEL_NAME)
+    cache_dir = Config.SHARED_PATH / "data"
 
     embedder = Embedder()
     output_manager = OutputManager(output_path)
+    cache = EmbeddingCache(cache_dir)
 
     print_header("Level 01: Basic Vector Search with Qdrant")
 
-    # Setup vector store once
-    vector_store = setup_vector_store(embedder, documents_path)
+    # Setup vector store once (uses cache if available)
+    vector_store = setup_vector_store(embedder, documents_path, cache)
 
     # Interactive query loop
     while True:

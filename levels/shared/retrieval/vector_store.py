@@ -297,3 +297,19 @@ class QdrantVectorStore(VectorStore):
             return None
         except Exception:
             return None
+
+    def count_vectors(self, collection_name: str) -> int:
+        """
+        Count the number of vectors in a collection.
+
+        Args:
+            collection_name: Name of the collection
+
+        Returns:
+            Number of vectors in the collection
+        """
+        try:
+            collection_info = self.client.get_collection(collection_name=collection_name)
+            return collection_info.points_count
+        except Exception:
+            return 0
