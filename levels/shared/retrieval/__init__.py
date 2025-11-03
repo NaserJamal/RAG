@@ -3,6 +3,7 @@
 from .embedder import Embedder
 from .vector_store import VectorStore, QdrantVectorStore
 from .similarity import cosine_similarity, euclidean_distance, dot_product_similarity
+from .bm25 import BM25Search, reciprocal_rank_fusion
 
 __all__ = [
     "Embedder",
@@ -11,4 +12,6 @@ __all__ = [
     "cosine_similarity",
     "euclidean_distance",
     "dot_product_similarity",
+    "BM25Search",
+    "reciprocal_rank_fusion",
 ]

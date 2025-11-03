@@ -12,7 +12,7 @@ import json
 from typing import Dict, Any
 
 from core.tool_system import registry
-from interface.ui import display
+from interface.ui import print_tool_call, print_tool_result, print_tool_error
 
 
 def convert_arguments(arguments: Dict[str, Any]) -> Dict[str, Any]:
@@ -55,7 +55,7 @@ def execute_tool_call(tool_call) -> str:
     arguments = json.loads(tool_call.function.arguments)
 
     # Display the tool call
-    display.print_tool_call(function_name, arguments)
+    print_tool_call(function_name, arguments)
 
     try:
         # Get the tool function
@@ -63,7 +63,7 @@ def execute_tool_call(tool_call) -> str:
 
         if not tool_function:
             error_msg = f"Tool '{function_name}' not found"
-            display.print_tool_error(error_msg)
+            print_tool_error(error_msg)
             return error_msg
 
         # Convert arguments and execute
@@ -71,10 +71,10 @@ def execute_tool_call(tool_call) -> str:
         result = tool_function(**converted_args)
 
         # Display result
-        display.print_tool_result(result)
+        print_tool_result(result)
         return str(result)
 
     except Exception as e:
         error_msg = f"{type(e).__name__}: {e}"
-        display.print_tool_error(error_msg)
+        print_tool_error(error_msg)
         return error_msg
