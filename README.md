@@ -34,8 +34,14 @@ git clone <your-repo-url>
 cd RAG
 
 # 2. Create virtual environment
+# macOS/Linux:
 python -m venv venv
-source venv/bin/activate  # Windows: .\venv\Scripts\Activate.ps1
+source venv/bin/activate
+
+# Windows PowerShell:
+python -m venv venv
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+.\venv\Scripts\Activate.ps1
 
 # 3. Install dependencies
 pip install -r requirements.txt
