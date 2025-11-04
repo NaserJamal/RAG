@@ -269,8 +269,6 @@ def select_search_method(query: str) -> str:
 
 Now you understand when to use semantic vs exact matching. But we've been treating documents as monolithic chunks. What if your documents are thousands of words long? You'll need an effective chunking strategy.
 
-➡️ Continue to [Level 03: Chunking Strategies](../03-chunking-strategies/README.md) to learn how to split documents into optimal chunks for retrieval.
-
 ---
 
-← [Back to Main README](../../README.md)
+👈 Back to [Level 01: Basic Vector Search](../01-basic-vector-search/README.md) | 👉 Continue to [Level 03: Chunking Strategies](../03-chunking-strategies/README.md)

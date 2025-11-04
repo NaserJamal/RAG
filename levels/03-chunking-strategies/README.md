@@ -320,4 +320,4 @@ You now have a complete RAG pipeline: embedding, retrieval (semantic vs exact ma
 
 ---
 
-← [Back to Level 02: Semantic vs Exact Match](../02-semantic-vs-exact/README.md) | [Back to Main README](../../README.md)
+👈 Back to [Level 02: Semantic vs Exact Match](../02-semantic-vs-exact/README.md) | 👉 Continue to [Level 04: Full Pipeline](../04-full-pipeline/README.md)

@@ -204,8 +204,6 @@ Vector search is powerful but has limitations. It struggles with:
 - Rare or specialized terminology
 - Queries that need precise exact matching
 
-➡️ Continue to [Level 02: Semantic vs Exact Match](../02-semantic-vs-exact/README.md) to learn when to use semantic search vs exact keyword matching.
-
 ---
 
-← [Back to Main README](../../README.md)
+👈 Back to [Main README](../../README.md) | 👉 Continue to [Level 02: Semantic vs Exact Match](../02-semantic-vs-exact/README.md)

@@ -290,3 +290,7 @@ This level demonstrates a production-ready RAG retrieval system. You now underst
 - ✓ Building efficient multi-document search systems
 
 The foundation you've built here is essential for more advanced RAG applications!
+
+---
+
+👈 Back to [Level 03: Chunking Strategies](../03-chunking-strategies/README.md) | 👉 Continue to [Level 05: Agentic RAG](../05-agentic-rag/README.md)

@@ -1,4 +1,4 @@
-# Simple RAG - Progressive RAG Training
+# RAG Training - Progressive Learning Path
 
 Learn Retrieval-Augmented Generation (RAG) through hands-on, production-ready examples.
 
@@ -6,12 +6,12 @@ Learn Retrieval-Augmented Generation (RAG) through hands-on, production-ready ex
 
 Retrieval-Augmented Generation (RAG) is transforming how AI systems access and use information. Instead of relying solely on knowledge baked into model weights, RAG systems retrieve relevant information from external sources and use it to generate accurate, up-to-date responses.
 
-This repository teaches RAG fundamentals through progressively complex levels. You'll start with basic vector search, progress through hybrid retrieval strategies, master chunking techniques, and understand when to apply each approach. Each level includes:
+This repository teaches RAG fundamentals through progressively complex levels. You'll start with basic vector search, progress through hybrid retrieval strategies, master chunking techniques, build a complete pipeline, and finally implement an intelligent agentic RAG system. Each level includes:
 
 - **Working code** you can run immediately
-- **Real-world sample documents** that demonstrate realistic use cases
 - **Cost-conscious implementations** with optimization strategies
 - **Detailed explanations** of why and when to use each technique
+- **Modular architecture** using shared components
 
 By the end, you'll understand the core building blocks of production RAG systems and have modular, adaptable code you can use in your own projects.
 
@@ -19,30 +19,23 @@ By the end, you'll understand the core building blocks of production RAG systems
 
 - **Python 3.8+**
 - **Docker and Docker Compose** (for Qdrant vector database)
-- **OpenAI-compatible API key** for embeddings generation (OpenAI, Groq, LocalAI, etc.)
-- **Basic understanding of Python** and API usage
-- **Familiarity with command line** operations
+- **API keys**:
+  - Embedding API (OpenAI, Groq, or any OpenAI-compatible endpoint)
+  - LLM API for Level 05 (OpenRouter, OpenAI, or compatible)
+- **Basic understanding of Python** and command line
 
 No prior experience with RAG, embeddings, or vector search required – we'll teach you everything.
 
 ## Quick Start
 
 ```bash
-# 1. Clone the repository
+# 1. Clone and navigate
 git clone <your-repo-url>
-cd simple-rag
-# or
-code -r /path/to/cloned-repo
+cd RAG
 
-# 2. Create virtual environment (recommended)
-# macOS/Linux:
+# 2. Create virtual environment
 python -m venv venv
-source venv/bin/activate
-
-# Windows PowerShell:
-python -m venv venv
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-.\venv\Scripts\Activate.ps1
+source venv/bin/activate  # Windows: .\venv\Scripts\Activate.ps1
 
 # 3. Install dependencies
 pip install -r requirements.txt
@@ -52,58 +45,12 @@ docker-compose up -d
 
 # 5. Configure API credentials
 cp .env.example .env
-# Edit .env and add your EMBEDDING_API_KEY and EMBEDDING_BASE_URL
+# Edit .env and add your API keys
 
 # 6. Run Level 01
 cd levels/01-basic-vector-search
 python main.py
-
-# You should see results printed and saved to output/
 ```
-
-That's it! You've just run your first vector search.
-
-## Levels Overview
-
-### 🎯 Level 01: Basic Vector Search
-Learn the fundamentals of semantic search using embeddings and cosine similarity.
-
-**What you'll learn**: Text embeddings, vector similarity, basic retrieval pipeline
-
-**Time**: 15 minutes | **Cost**: ~$0.001
-
-[Start Level 01 →](levels/01-basic-vector-search/README.md)
-
----
-
-### 🔀 Level 02: Semantic vs Exact Match
-Compare semantic search with keyword matching to understand when each approach excels.
-
-**What you'll learn**: BM25 keyword search, exact matching strength, semantic understanding, comparing retrieval approaches
-
-**Time**: 20 minutes | **Cost**: ~$0.002
-
-[Start Level 02 →](levels/02-semantic-vs-exact/README.md)
-
----
-
-### ✂️ Level 03: Chunking Strategies
-Master the art of splitting documents for optimal retrieval quality.
-
-**What you'll learn**: Fixed-size chunking, recursive splitting, semantic chunking, chunk overlap strategies
-
-**Time**: 30 minutes | **Cost**: ~$0.01
-
-[Start Level 03 →](levels/03-chunking-strategies/README.md)
-
----
-
-### 🤖 Level 04: Agentic RAG
-**Coming Soon** - Advanced patterns with self-correction, tool use, and multi-step reasoning.
-
-[Learn more →](levels/04-agentic-rag/README.md)
-
----
 
 ## Installation
 
@@ -112,19 +59,20 @@ Master the art of splitting documents for optimal retrieval quality.
 - Python 3.8 or higher
 - 4GB RAM minimum (8GB recommended)
 - Internet connection for API calls
+- Docker and Docker Compose
 
 ### Step-by-Step Setup
 
 1. **Clone the repository**:
 ```bash
 git clone <your-repo-url>
-cd simple-rag
+cd RAG
 ```
 
 2. **Create a virtual environment** (recommended):
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # On Windows: .\venv\Scripts\Activate.ps1
 ```
 
 3. **Install dependencies**:
@@ -137,39 +85,86 @@ pip install -r requirements.txt
 docker-compose up -d
 ```
 
-5. **Download NLTK data** (for Level 03):
-```bash
-python -c "import nltk; nltk.download('punkt')"
-```
+## Levels Overview
+
+### 🎯 Level 01: Basic Vector Search
+Learn the fundamentals of semantic search using embeddings and cosine similarity.
+
+**What you'll learn**: Text embeddings, vector similarity, basic retrieval pipeline
+
+[Start Level 01 →](levels/01-basic-vector-search/README.md)
+
+---
+
+### 🔀 Level 02: Semantic vs Exact Match
+Compare semantic search with keyword matching to understand when each approach excels.
+
+**What you'll learn**: BM25 keyword search, exact matching, semantic understanding, hybrid retrieval
+
+[Start Level 02 →](levels/02-semantic-vs-exact/README.md)
+
+---
+
+### ✂️ Level 03: Chunking Strategies
+Master the art of splitting documents for optimal retrieval quality.
+
+**What you'll learn**: Fixed-size chunking, recursive splitting, semantic chunking, overlap strategies
+
+[Start Level 03 →](levels/03-chunking-strategies/README.md)
+
+---
+
+### 🔄 Level 04: Full Pipeline
+Build a complete end-to-end RAG system with PDF processing, caching, and multi-document search.
+
+**What you'll learn**: PDF extraction, smart caching, production pipeline, multi-document retrieval
+
+[Start Level 04 →](levels/04-full-pipeline/README.md)
+
+---
+
+### 🤖 Level 05: Agentic RAG
+Implement an intelligent AI agent that decides when and how to search documents.
+
+**What you'll learn**: Tool calling, autonomous reasoning, agentic patterns, streaming responses
+
+[Start Level 05 →](levels/05-agentic-rag/README.md)
+
+---
 
 ## Configuration
 
-### Setting Up Your API Key
+### Setting Up Your API Keys
 
 1. **Copy the example environment file**:
 ```bash
 cp .env.example .env
 ```
 
-2. **Edit `.env` and add your API key**:
+2. **Edit `.env` and add your API credentials**:
 ```bash
-# Required
-OPENAI_API_KEY=sk-your-actual-api-key-here
-
-# Optional - defaults shown
+# Embedding API (Levels 01-05)
+EMBEDDING_API_KEY=your-api-key-here
+EMBEDDING_BASE_URL=https://api.openai.com/v1
 EMBEDDING_MODEL=text-embedding-3-small
+
+# LLM API (Level 05 only)
+LLM_API_KEY=your-llm-api-key
+LLM_BASE_URL=https://openrouter.ai/api/v1
+LLM_MODEL=qwen/qwen3-coder-30b-a3b-instruct
+
+# Qdrant Vector Database
 QDRANT_HOST=localhost
 QDRANT_PORT=6333
 ```
 
-### Configuration Options
+### Shared Components
 
-Each level has a `config.py` (or configuration at the top of `main.py`) where you can adjust:
+This repository uses a **shared component architecture** to avoid code duplication:
 
-- **Embedding models**: Switch between different OpenAI embedding models
-- **Chunk sizes**: Adjust for your document types
-- **Top-K results**: Number of retrieved documents/chunks
-- **Search weights**: Balance semantic vs keyword search
+- **`levels/shared/`** contains reusable components used across all levels
+- Each level builds on these shared components while introducing new concepts
+- Promotes clean, maintainable code and consistent patterns
 
 ## What Makes This Different?
 
@@ -188,208 +183,100 @@ Each level has a `config.py` (or configuration at the top of `main.py`) where yo
   - Each level builds on previous knowledge
   - Clear explanations of when and why
 
-- ✅ **Real-world sample documents**
-  - Company policies, technical docs, news articles
-  - Diverse content types to test different scenarios
-  - Realistic document lengths and structures
-
-- ✅ **Comprehensive documentation**
-  - Concept explanations with diagrams
-  - Code walkthroughs
-  - Common issues and solutions
-  - Ideas for extending each level
+- ✅ **Progressive complexity** - from basics to production
+  - Start with fundamentals and build to complete systems
+  - Each level introduces exactly one new concept
+  - Clear learning path with detailed documentation
 
 ## Repository Structure
 
 ```
-simple-rag/
+RAG/
 ├── README.md                        # You are here
 ├── requirements.txt                 # Python dependencies
 ├── docker-compose.yml               # Qdrant vector database
 ├── .env.example                     # API configuration template
-├── .gitignore                       # Git ignore rules
-│
-├── documents/                       # Shared sample documents
-│   ├── company-kb/                  # Company knowledge base
-│   ├── technical-docs/              # Technical documentation
-│   ├── news-articles/               # Current events articles
-│   └── mixed-content/               # Various document types
-│
 └── levels/                          # Progressive learning levels
-    ├── shared/                      # Shared components (NEW!)
-    │   ├── README.md                # Component documentation
+    │
+    ├── shared/                      # Shared components
     │   ├── config.py                # Centralized configuration
-    │   ├── embedder.py              # OpenAI embedding generation
+    │   ├── embedder.py              # Embedding generation
     │   ├── vector_store.py          # Qdrant integration
-    │   ├── document_loader.py       # Document loading utilities
+    │   ├── document_loader.py       # Document utilities
     │   ├── similarity.py            # Similarity metrics
     │   └── output_manager.py        # Results formatting
     │
-    ├── 01-basic-vector-search/
-    │   ├── README.md                # Level documentation
-    │   ├── main.py                  # Uses shared components
-    │   └── output/                  # Generated results
-    │
-    ├── 02-semantic-vs-exact/
-    │   ├── README.md
-    │   ├── main.py                  # Entry point
-    │   ├── citizens/                # Sample documents with IDs
-    │   ├── output/
-    │   └── utils/                   # Level-specific utilities
-    │       ├── config.py            # Extends shared config
-    │       ├── vector_retriever.py  # Qdrant wrapper
-    │       └── bm25_retriever.py    # BM25 keyword search
-    │
-    ├── 03-chunking-strategies/
-    │   ├── README.md
+    ├── 01-basic-vector-search/      # Fundamentals
     │   ├── main.py
-    │   ├── output/
-    │   └── utils/                   # Level-specific utilities
-    │       ├── config.py            # Extends shared config
-    │       ├── fixed_chunker.py     # Token-based chunking
-    │       ├── recursive_chunker.py # Hierarchical splitting
-    │       ├── semantic_chunker.py  # Embedding-based chunking
-    │       └── chunk_evaluator.py   # Evaluation utilities
+    │   └── output/
     │
-    └── 04-agentic-rag/
-        └── README.md                # Coming soon placeholder
+    ├── 02-semantic-vs-exact/        # Hybrid retrieval
+    │   ├── main.py
+    │   ├── citizens/                # Sample documents
+    │   └── utils/
+    │
+    ├── 03-chunking-strategies/      # Document splitting
+    │   ├── main.py
+    │   └── utils/
+    │
+    ├── 04-full-pipeline/            # Complete RAG system
+    │   ├── main.py
+    │   ├── documents/               # PDF inputs
+    │   └── utils/
+    │
+    └── 05-agentic-rag/              # Intelligent agent
+        ├── main.py
+        ├── core/                    # Agent framework
+        ├── tools/                   # Tool implementations
+        └── interface/               # UI components
 ```
 
 ## Learning Path
 
-### For Beginners
-1. Start with **Level 01** to understand vector search fundamentals
-2. Progress to **Level 02** to see why hybrid search matters
-3. Complete **Level 03** to master chunking (essential for production)
-4. Experiment with the code, try different documents and queries
+**Recommended progression**:
 
-### For Experienced Developers
-- You can jump to any level, but we recommend at least skimming Level 01
-- Level 02 demonstrates the trade-offs between semantic and exact matching
-- Level 03's semantic chunking showcases advanced techniques
+1. **Level 01** → Understand vector search fundamentals
+2. **Level 02** → Learn when to use hybrid retrieval
+3. **Level 03** → Master chunking strategies
+4. **Level 04** → Build a complete production pipeline
+5. **Level 05** → Implement intelligent agentic RAG
 
-### Time Commitment
-- **Fast path**: 1-2 hours to run all levels and read READMEs
-- **Deep learning**: 4-6 hours to understand code, experiment, extend
-- **Production adaptation**: Days to weeks, depending on your use case
+Each level takes 15-30 minutes to complete and builds on previous concepts.
 
-## Cost Transparency
+## Common Issues
 
-All levels use OpenAI's `text-embedding-3-small` model for cost efficiency:
+### Missing dependencies
+```bash
+pip install -r requirements.txt
+```
 
-| Level | One-Time Setup | Per Query | 100 Queries Total |
-|-------|---------------|-----------|-------------------|
-| 01 - Basic Vector | $0.0001 | $0.00001 | $0.001 |
-| 02 - Semantic vs Exact | $0.0001 | $0.00001 | $0.001 |
-| 03 - Chunking (Fixed/Recursive) | $0.0005 | $0.00001 | $0.002 |
-| 03 - Chunking (Semantic) | $0.01 | $0.0001 | $0.02 |
+### API authentication errors
+Check your `.env` file has valid API keys for both embedding and LLM endpoints.
 
-**Complete all levels: Less than $0.05 total**
+### Qdrant connection issues
+```bash
+docker-compose up -d  # Ensure Qdrant is running
+```
 
-### Cost Optimization Tips
+### Rate limits
+Wait briefly or reduce batch sizes. Consider using caching (implemented in Level 04).
 
-1. **Cache embeddings** - Don't regenerate on each run
-2. **Use batch operations** - Process multiple texts together
-3. **Start small** - Test with a few documents first
-4. **Monitor usage** - Check OpenAI dashboard regularly
-5. **Consider alternatives** - OpenRouter, local embeddings (sentence-transformers)
+## Next Steps
 
-## Common Issues & Troubleshooting
+After completing this training:
 
-### "ModuleNotFoundError: No module named 'openai'"
-**Solution**: Install dependencies: `pip install -r requirements.txt`
-
-### "openai.AuthenticationError: Invalid API key"
-**Solution**: Check your `.env` file has correct `OPENAI_API_KEY`
-
-### "Rate limit exceeded"
-**Solution**: Wait 60 seconds or reduce the number of documents you're processing
-
-### "punkt not found" (Level 03)
-**Solution**: Download NLTK data: `python -c "import nltk; nltk.download('punkt')"`
-
-### Results seem irrelevant
-**Solution**:
-- Try different queries (be specific)
-- Check if documents actually contain relevant information
-- Adjust TOP_K to retrieve more results
-- For Level 02+, tune the alpha/threshold parameters
-
-### Slow performance
-**Solution**:
-- This is expected for semantic chunking (Level 03)
-- Cache embeddings to avoid regenerating
-- Use fewer documents for testing
-- Consider vector databases (Pinecone, Weaviate) for production scale
-
-## Going to Production
-
-This repository teaches fundamentals. For production RAG systems, consider:
-
-### Vector Databases
-- **Qdrant**: High performance, used in this training
-- **Pinecone**: Managed, easy to use, good DX
-- **Weaviate**: Open source, feature-rich
-- **Chroma**: Simple, local-first
-
-### Frameworks
-- **LangChain**: Comprehensive, lots of integrations
-- **LlamaIndex**: RAG-focused, excellent docs
-- **Haystack**: Flexible, production-oriented
-
-### Additional Considerations
-- **Monitoring**: Track retrieval quality, latency, costs
+### Production Considerations
+- **Vector Databases**: Pinecone, Weaviate, or Qdrant Cloud for scale
+- **Frameworks**: LangChain or LlamaIndex for rapid development
+- **Monitoring**: Track retrieval quality, latency, and costs
 - **Evaluation**: Implement metrics (MRR, NDCG, answer quality)
-- **Scalability**: Handle millions of documents efficiently
-- **Updates**: Strategy for adding/updating documents
 - **Security**: Access control, data privacy, PII handling
 
-## Contributing
-
-Found a bug? Have a suggestion? Want to add a level?
-
-- **Issues**: Open an issue on GitHub
-- **Pull Requests**: Contributions welcome!
-- **Ideas**: Share in discussions
-
-Please ensure:
-- Code follows existing style (type hints, docstrings)
-- Documentation is comprehensive
-- Costs are calculated and documented
-- Examples are tested and working
-
-## Resources
-
-### Learning More About RAG
+### Learning Resources
 - [Anthropic: Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval)
 - [OpenAI: Embeddings Guide](https://platform.openai.com/docs/guides/embeddings)
 - [Pinecone: RAG Best Practices](https://www.pinecone.io/learn/retrieval-augmented-generation/)
 
-### Vector Search & Embeddings
-- [Jay Alammar: Illustrated Word2Vec](https://jalammar.github.io/illustrated-word2vec/)
-- [Vicki Boykis: What are embeddings?](https://vickiboykis.com/what_are_embeddings/)
-
-### Related Topics
-- [LangChain Documentation](https://python.langchain.com/docs/get_started/introduction)
-- [LlamaIndex Documentation](https://docs.llamaindex.ai/)
-- [BM25 Algorithm Explained](https://en.wikipedia.org/wiki/Okapi_BM25)
-
-## License
-
-MIT License - feel free to use this code in your projects, commercial or otherwise.
-
-## Acknowledgments
-
-This repository was inspired by patterns from production RAG systems and educational resources from the community. Special thanks to:
-
-- OpenAI for accessible embedding models
-- The open-source RAG community
-- Everyone building and sharing RAG knowledge
-
 ---
 
-**Ready to start?** Head to [Level 01: Basic Vector Search](levels/01-basic-vector-search/README.md)
-
-**Questions?** Open an issue or start a discussion.
-
-**Building something cool with this?** We'd love to hear about it!
+**Ready to start?** → [Level 01: Basic Vector Search](levels/01-basic-vector-search/README.md)
