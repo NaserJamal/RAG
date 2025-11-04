@@ -92,8 +92,28 @@ async def main():
         for filename, text in extracted_docs
     ]
 
-    # Step 2: Initialize summarizer
-    print(f"[Step 2/3] Initializing hierarchical summarizer...")
+    # Step 2: Get user instructions (optional)
+    print(f"[Step 2/4] Custom instructions (optional)")
+    print("─" * 70)
+    print("You can provide custom instructions for the executive summary.")
+    print("Examples:")
+    print("  • Focus on financial metrics and ROI")
+    print("  • Highlight technical challenges and solutions")
+    print("  • Summarize in bullet points only")
+    print("  • Extract action items and deadlines")
+    print("\nPress Enter to skip, or type your instructions:")
+    print("─" * 70)
+
+    user_instructions = input("> ").strip()
+
+    if user_instructions:
+        print(f"\n✓ Custom instructions received: {user_instructions[:60]}{'...' if len(user_instructions) > 60 else ''}\n")
+    else:
+        print(f"\n✓ Using default summary format\n")
+        user_instructions = None
+
+    # Step 3: Initialize summarizer
+    print(f"[Step 3/4] Initializing hierarchical summarizer...")
     print(f"  Model: {Config.LLM_MODEL}")
     print(f"  Batch size: 10 summaries per reduce step")
     print(f"  Max concurrent: 5 LLM calls\n")
@@ -106,15 +126,18 @@ async def main():
         max_concurrent=5
     )
 
-    # Step 3: Process documents
-    print(f"[Step 3/3] Processing documents with hierarchical map-reduce...")
+    # Step 4: Process documents
+    print(f"[Step 4/4] Processing documents with hierarchical map-reduce...")
 
     try:
-        result = await summarizer.process_documents(documents, output_dir)
+        result = await summarizer.process_documents(documents, output_dir, user_instructions)
 
         # Display executive summary
         print("\n" + "="*70)
         print("EXECUTIVE SUMMARY")
+        if user_instructions:
+            print(f"\n## User Instructions:")
+            print(f"{user_instructions}")
         print("="*70 + "\n")
         print(result['executive_summary'])
         print("\n" + "="*70)
@@ -131,6 +154,8 @@ async def main():
         print(f"\n📊 Processing Statistics:")
         print(f"  Documents processed: {metadata['total_documents']}")
         print(f"  Hierarchy levels: {metadata['levels_processed']}")
+        if user_instructions:
+            print(f"  Custom instructions: Yes")
         print(f"  Total tokens used: {total_tokens:,}")
         print(f"  Processing time: {metadata['processing_time_seconds']:.2f}s")
         print(f"  Estimated cost: ${estimated_cost:.4f}")

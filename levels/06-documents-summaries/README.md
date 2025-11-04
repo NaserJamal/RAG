@@ -67,6 +67,12 @@ cp /path/to/your/*.pdf documents/
 
 # 4. Run summarization
 python main.py
+
+# 5. (Optional) Provide custom instructions when prompted:
+#    "Focus on financial metrics and ROI"
+#    "Highlight technical challenges and solutions"
+#    "Summarize in bullet points only"
+#    Or press Enter to use default format
 ```
 
 ## Example Output
@@ -186,6 +192,78 @@ international operations and maintaining current growth trajectory.
 - 10 docs: ~20-30 seconds
 - 100 docs: ~2-3 minutes
 - 1000 docs: ~15-20 minutes
+
+## Custom Instructions
+
+### Tailoring Your Executive Summary
+
+When you run the script, you'll be prompted to provide optional custom instructions:
+
+```
+[Step 2/4] Custom instructions (optional)
+──────────────────────────────────────────────────────────────────────
+You can provide custom instructions for the executive summary.
+Examples:
+  • Focus on financial metrics and ROI
+  • Highlight technical challenges and solutions
+  • Summarize in bullet points only
+  • Extract action items and deadlines
+
+Press Enter to skip, or type your instructions:
+──────────────────────────────────────────────────────────────────────
+>
+```
+
+### Example Custom Instructions
+
+**For Business Documents:**
+```
+Focus on financial metrics, revenue growth, and strategic initiatives.
+Highlight risks and opportunities. Use a professional tone suitable for C-level executives.
+```
+
+**For Technical Documents:**
+```
+Emphasize technical architecture, implementation challenges, and performance metrics.
+Include specific technologies mentioned and their trade-offs.
+```
+
+**For Research Papers:**
+```
+Summarize the research methodology, key findings, and conclusions.
+Highlight novel contributions and future work suggestions.
+```
+
+**For Meeting Notes:**
+```
+Extract all action items, decisions made, and deadlines.
+List who is responsible for each action item.
+```
+
+**For Legal/Compliance:**
+```
+Focus on regulatory requirements, compliance issues, and risk factors.
+Highlight any deadlines or mandatory actions.
+```
+
+### How It Works
+
+The custom instructions are passed to the LLM in the final executive summary generation:
+
+```
+## User Instructions:
+{your custom instructions here}
+
+Follow these user instructions carefully when creating the executive summary.
+```
+
+This allows you to:
+- **Focus** the summary on specific aspects
+- **Format** the output in your preferred style
+- **Extract** particular types of information
+- **Tailor** the tone and depth to your audience
+
+The instructions are also saved in the metadata file for reference.
 
 ## Configuration
 

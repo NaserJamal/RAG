@@ -157,30 +157,48 @@ Provide a unified summary:"""
             except Exception as e:
                 raise ValueError(f"Error combining summaries (level {level}, batch {batch_num}): {str(e)}")
 
-    async def create_executive_summary(self, final_summary: str, total_docs: int) -> str:
+    async def create_executive_summary(
+        self,
+        final_summary: str,
+        total_docs: int,
+        user_instructions: str = None
+    ) -> str:
         """
         Create the final executive summary with formatting.
 
         Args:
             final_summary: The combined summary from all documents
             total_docs: Total number of documents processed
+            user_instructions: Optional custom instructions from user
 
         Returns:
             Formatted executive summary
         """
         async with self.semaphore:
-            prompt = f"""You are creating a professional executive summary based on {total_docs} documents.
+            # Build base prompt
+            base_prompt = f"""You are creating a professional executive summary based on {total_docs} documents.
 
 Transform this synthesized content into a polished executive summary:
 
-{final_summary}
+{final_summary}"""
+
+            # Add user instructions if provided
+            if user_instructions:
+                instructions_section = f"""
+
+## User Instructions:
+{user_instructions}
+
+Follow these user instructions carefully when creating the executive summary."""
+            else:
+                instructions_section = """
 
 Create a well-structured executive summary with:
 - A brief overview (2-3 sentences)
 - Key findings or themes (bullet points)
-- Critical takeaways or conclusions
+- Critical takeaways or conclusions"""
 
-Make it professional, clear, and actionable:"""
+            prompt = base_prompt + instructions_section + "\n\nMake it professional, clear, and actionable:"
 
             try:
                 response = await self.client.chat.completions.create(
@@ -201,7 +219,8 @@ Make it professional, clear, and actionable:"""
     async def process_documents(
         self,
         documents: List[Dict[str, str]],
-        output_dir: Path
+        output_dir: Path,
+        user_instructions: str = None
     ) -> Dict:
         """
         Process all documents using hierarchical map-reduce.
@@ -209,6 +228,7 @@ Make it professional, clear, and actionable:"""
         Args:
             documents: List of dicts with 'filename' and 'text' keys
             output_dir: Directory to save intermediate and final outputs
+            user_instructions: Optional custom instructions for executive summary
 
         Returns:
             Dictionary containing executive summary and processing metadata
@@ -295,9 +315,12 @@ Make it professional, clear, and actionable:"""
 
         # Final executive summary
         print(f"\n[Final Phase] Creating executive summary...")
+        if user_instructions:
+            print(f"  → Applying user instructions: {user_instructions[:80]}{'...' if len(user_instructions) > 80 else ''}")
         executive_summary = await self.create_executive_summary(
             current_summaries[0],
-            len(documents)
+            len(documents),
+            user_instructions
         )
 
         # Save final summary
@@ -316,6 +339,7 @@ Make it professional, clear, and actionable:"""
             "levels_processed": level,
             "batch_size": self.batch_size,
             "max_concurrent": self.max_concurrent,
+            "user_instructions": user_instructions,
             "timestamp": start_time.isoformat(),
             "processing_log": processing_log
         }
