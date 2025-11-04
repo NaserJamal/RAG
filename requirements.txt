@@ -10,6 +10,7 @@ qdrant-client>=1.7.0
 rank-bm25>=0.2.2      # Level 02: BM25 keyword search
 tiktoken>=0.5.0       # Level 03: Token counting for chunking
 nltk>=3.8.0           # Level 03: Sentence tokenization
+pymupdf>=1.23.0       # Level 04: PDF text extraction
 
 # UI
 rich>=13.0.0
