@@ -138,6 +138,15 @@ Implement an intelligent AI agent that decides when and how to search documents.
 
 ---
 
+### 📊 Level 06: Multi-Document Summaries
+Scale to hundreds of documents using hierarchical map-reduce summarization.
+
+**What you'll learn**: Map-reduce patterns, parallel processing, tree-based batching, executive summaries
+
+[Start Level 06 →](levels/06-documents-summaries/README.md)
+
+---
+
 ## Configuration
 
 ### Setting Up Your API Keys
