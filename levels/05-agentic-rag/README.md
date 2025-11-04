@@ -1,4 +1,4 @@
-# Level 04: Agentic RAG
+# Level 05: Agentic RAG
 
 An AI agent with tool calling capabilities that can intelligently search and retrieve information from a document collection to answer user questions.
 
@@ -18,7 +18,7 @@ This level demonstrates **agentic RAG** - a system where an AI agent autonomousl
 ## Project Structure
 
 ```
-04-agentic-rag/
+05-agentic-rag/
 ├── main.py                          # Entry point
 │
 ├── core/                            # Core framework
@@ -60,7 +60,7 @@ This level demonstrates **agentic RAG** - a system where an AI agent autonomousl
 Edit the root `.env` file (at the repository root) and add the LLM API configuration:
 
 ```bash
-# LLM API Configuration (Level 04: Agentic RAG)
+# LLM API Configuration (Level 05: Agentic RAG)
 # OpenAI-compatible endpoint for the AI agent
 LLM_API_KEY=sk-or-v1-YOUR-API-KEY
 LLM_BASE_URL=https://openrouter.ai/api/v1
@@ -83,7 +83,7 @@ QDRANT_PORT=6333
 Navigate to the level directory and run:
 
 ```bash
-cd levels/04-agentic-rag
+cd levels/05-agentic-rag
 python main.py
 ```
 
@@ -217,4 +217,4 @@ This level demonstrates:
 
 ---
 
-👈 Back to [Level 04: Full Pipeline](../04-full-pipeline/README.md) | 🏠 [Main README](../../README.md)
+👈 Back to [Level 04: Full Pipeline](../04-full-pipeline/README.md) | Next: [Level 06: Document Summaries](../06-documents-summaries/README.md) 👉 | 🏠 [Main README](../../README.md)

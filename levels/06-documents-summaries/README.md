@@ -543,6 +543,6 @@ After completing this level:
 
 ---
 
-**Previous Level**: [Level 05: Agentic RAG](../05-agentic-rag/README.md)
+👈 Back to [Level 05: Agentic RAG](../05-agentic-rag/README.md) | 🏠 [Main README](../../README.md)
 
 **Next**: Build custom applications combining RAG + Summarization!
