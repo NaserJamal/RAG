@@ -19,8 +19,23 @@ OUTPUT_PATH = SharedConfig.get_output_path("03-chunking-strategies")
 
 # Chunking Configuration
 CHUNK_SIZE = 512        # Target chunk size in tokens
-CHUNK_OVERLAP = 50      # Overlap between chunks in tokens
+CHUNK_OVERLAP = 51      # Overlap between chunks in tokens (10% of CHUNK_SIZE for default)
 SEMANTIC_THRESHOLD = 0.5  # Similarity threshold for semantic chunking
+
+# Contextual Retrieval Configuration
+# Uses LLM_MODEL from shared config
+CONTEXT_INSTRUCTIONS_TEMPLATE = """You are generating context for a document chunk to improve search retrieval.
+
+<document>
+{document}
+</document>
+
+Here is the chunk we want to situate within the whole document:
+<chunk>
+{chunk}
+</chunk>
+
+Please give a short succinct context to situate this chunk within the overall document for the purposes of improving search retrieval of the chunk. Answer only with the succinct context and nothing else."""
 
 # Retrieval Configuration
 TOP_K = 3               # Number of chunks to retrieve

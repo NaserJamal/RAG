@@ -302,12 +302,22 @@ chunk = {
 
 ## What's Next?
 
-You now have a complete RAG pipeline: embedding, retrieval (hybrid search), and chunking. These are the core building blocks of production RAG systems.
+You now have a complete RAG pipeline: embedding, retrieval (semantic vs exact matching), and chunking. These are the core building blocks of production RAG systems.
 
-Level 04 will explore agentic RAG patterns, but that's coming in a future update.
+**Congratulations!** You've completed the core RAG training levels. You now understand:
+- ✅ Vector search and semantic similarity (Level 01)
+- ✅ When to use semantic vs exact matching (Level 02)
+- ✅ How to chunk documents effectively (Level 03)
 
-➡️ For now, explore the code, experiment with different chunk sizes, and try all three strategies on your own documents!
+**Continue Your Learning:**
+
+➡️ [Level 04: Agentic RAG](../04-agentic-rag/README.md) - Explore advanced patterns with self-correction, tool use, and multi-step reasoning.
+
+➡️ For now, experiment with the code:
+- Try all three chunking strategies on your own documents
+- Test different chunk sizes and overlap settings
+- Combine what you learned in Levels 01-03 for your use case
 
 ---
 
-← [Back to Main README](../../README.md)
+← [Back to Level 02: Semantic vs Exact Match](../02-semantic-vs-exact/README.md) | [Back to Main README](../../README.md)

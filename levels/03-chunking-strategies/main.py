@@ -1,7 +1,10 @@
 """
 Level 03: Chunking Strategies
 
-Compares different text chunking approaches for optimal retrieval.
+Compares three fundamental chunking approaches:
+1. Fixed-Size Chunking - Simple, fast, predictable
+2. Semantic Chunking - Respects document structure (paragraphs, sentences)
+3. Contextual Retrieval - LLM-enriched chunks for best retrieval accuracy
 """
 
 import sys
@@ -15,8 +18,8 @@ from shared import Config, Embedder, load_documents, OutputManager
 
 from utils.config import DOCUMENTS_PATH, OUTPUT_PATH, TOP_K
 from utils.fixed_chunker import FixedChunker
-from utils.recursive_chunker import RecursiveChunker
 from utils.semantic_chunker import SemanticChunker
+from utils.contextual_chunker import ContextualChunker
 from utils.chunk_evaluator import ChunkEvaluator
 
 
@@ -72,29 +75,33 @@ def main():
 
     # Initialize chunkers
     fixed_chunker = FixedChunker()
-    recursive_chunker = RecursiveChunker()
-    semantic_chunker = SemanticChunker(embedder)
+    semantic_chunker = SemanticChunker()
+    contextual_chunker = ContextualChunker()
 
     # Process with each chunking strategy
     print("🔪 Chunking document...")
 
-    print("\n1. Fixed-size chunking...")
+    print("\n1. Fixed-Size Chunking (Simple, fast, predictable)...")
     fixed_chunks = fixed_chunker.chunk(test_doc["content"], test_doc["id"])
     print(f"   Created {len(fixed_chunks)} chunks")
 
-    print("\n2. Recursive chunking...")
-    recursive_chunks = recursive_chunker.chunk(test_doc["content"], test_doc["id"])
-    print(f"   Created {len(recursive_chunks)} chunks")
-
-    print("\n3. Semantic chunking...")
+    print("\n2. Semantic Chunking (Natural boundaries with overlap)...")
     semantic_chunks = semantic_chunker.chunk(test_doc["content"], test_doc["id"])
     print(f"   Created {len(semantic_chunks)} chunks")
+
+    print("\n3. Contextual Retrieval (LLM-based enrichment)...")
+    print("   This may take a minute as we generate context for each chunk...")
+    # Estimate cost first
+    cost_estimate = contextual_chunker.estimate_cost(test_doc["content"])
+    print(f"   Estimated cost: ${cost_estimate['total_cost_usd']:.4f} for {cost_estimate['num_chunks']} chunks")
+    contextual_chunks = contextual_chunker.chunk(test_doc["content"], test_doc["id"])
+    print(f"   Created {len(contextual_chunks)} enriched chunks")
 
     # Save chunks
     print("\n💾 Saving chunks...")
     output_manager.save_results("fixed_chunks", {"chunks": fixed_chunks})
-    output_manager.save_results("recursive_chunks", {"chunks": recursive_chunks})
     output_manager.save_results("semantic_chunks", {"chunks": semantic_chunks})
+    output_manager.save_results("contextual_chunks", {"chunks": contextual_chunks})
 
     # Evaluate with a query
     query = "How do you handle model training and deployment?"
@@ -103,18 +110,18 @@ def main():
     print("\n   Evaluating fixed chunks...")
     fixed_eval = evaluator.evaluate(fixed_chunks, query, k=TOP_K)
 
-    print("   Evaluating recursive chunks...")
-    recursive_eval = evaluator.evaluate(recursive_chunks, query, k=TOP_K)
-
     print("   Evaluating semantic chunks...")
     semantic_eval = evaluator.evaluate(semantic_chunks, query, k=TOP_K)
+
+    print("   Evaluating contextual chunks...")
+    contextual_eval = evaluator.evaluate(contextual_chunks, query, k=TOP_K)
 
     # Save evaluations
     print("\n💾 Saving evaluations...")
     evaluations = {
         "fixed": fixed_eval,
-        "recursive": recursive_eval,
-        "semantic": semantic_eval
+        "semantic": semantic_eval,
+        "contextual": contextual_eval
     }
 
     for strategy, eval_data in evaluations.items():
@@ -175,8 +182,8 @@ def main():
 
     # Print visualizations
     print("\nChunk Size Distributions:")
-    for strategy, chunks in [("Fixed", fixed_chunks), ("Recursive", recursive_chunks),
-                              ("Semantic", semantic_chunks)]:
+    for strategy, chunks in [("Fixed", fixed_chunks), ("Semantic", semantic_chunks),
+                              ("Contextual", contextual_chunks)]:
         print(f"\n{strategy}:")
         viz = evaluator.visualize_chunks(chunks)
         print(viz)
@@ -195,13 +202,18 @@ def main():
     print("\n✅ Analysis complete!")
     print(f"\nOutput files saved to {OUTPUT_PATH}/:")
     print("   - fixed_chunks.json")
-    print("   - recursive_chunks.json")
     print("   - semantic_chunks.json")
+    print("   - contextual_chunks.json")
     print("   - fixed_evaluation.json")
-    print("   - recursive_evaluation.json")
     print("   - semantic_evaluation.json")
+    print("   - contextual_evaluation.json")
     print("   - comparison_metrics.json")
     print("   - chunk_visualization.txt")
+
+    # Print cost summary
+    print(f"\n💰 Cost Summary:")
+    print(f"   Contextual enrichment: ${cost_estimate['total_cost_usd']:.4f}")
+    print(f"   (Using prompt caching: {cost_estimate['uses_caching']})")
 
 
 if __name__ == "__main__":
